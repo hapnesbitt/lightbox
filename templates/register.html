@@ -1,55 +1,51 @@
 {% extends 'base.html' %}
-{% from "partials/_auth_info_block.html" import render_info_sections with context %} {# Import the macro #}
+{% from "partials/_auth_info_block.html" import render_info_sections with context %}
 
 {% block title %}LightBox - Register{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-7 offset-md-1 col-lg-6 offset-lg-0 order-lg-2"> {# Form on the right for larger screens #}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
         <div class="card shadow mb-4">
             <div class="card-header bg-white text-center">
-                <h2 class="card-title mb-0 h4">Create Your LightBox Account</h2>
+                <h1 class="card-title mb-0 h4">Create Your LightBox Account</h1>
             </div>
-            <div class="card-body p-4">
-                <form method="post" id="registerForm">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required minlength="3" autocomplete="username">
+            <div class="card-body p-lg-4">
+                <div class="row">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <form method="post" id="registerForm" novalidate> {# Added novalidate to allow our JS to fully control validation feedback #}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required minlength="3" autocomplete="username">
+                                <div class="invalid-feedback">Please choose a username (minimum 3 characters).</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required minlength="6" autocomplete="new-password">
+                                <div class="form-text small">Minimum 6 characters.</div>
+                                <div class="invalid-feedback">Password must be at least 6 characters.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6" autocomplete="new-password">
+                                <div class="invalid-feedback" id="confirmPasswordError">Passwords do not match.</div> {# Changed to Bootstrap invalid-feedback #}
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">Register</button>
+                        </form>
+                        <div class="mt-3 text-center">
+                            <p class="small">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                        </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required minlength="6" autocomplete="new-password">
-                        <div id="passwordHelp" class="form-text small">Minimum 6 characters.</div>
+                    <div class="col-md-6 border-md-start ps-md-4">
+                        {{ render_info_sections(show_welcome=true, show_getting_started=true, show_mkv_note=true, show_copyright_warning=true, show_contact=false) }}
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6" autocomplete="new-password">
-                        <div id="confirmPasswordError" class="form-text text-danger small" style="display: none;">Passwords do not match.</div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100">Register</button>
-                </form>
-                
-                <div class="mt-4 text-center">
-                    <p class="small">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="col-md-10 offset-md-1 col-lg-6 offset-lg-0 order-lg-1 mb-4"> {# Info on the left for larger screens #}
-        {# Use the macro to render desired sections for the registration page #}
-        {{ render_info_sections(show_welcome=true, show_getting_started=true, show_mkv_note=true, show_copyright_warning=true, show_contact=true) }}
-        
-        {# You could also include the full MKV command here if desired, outside the macro or by extending it #}
-        <div class="auth-info-section my-4 small text-muted">
-             <h5 class="h6"><i class="bi bi-tools"></i> Behind the Scenes: MKV Conversion</h5>
-             <p>For reference, this is similar to the <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">FFmpeg</a> command we use for MKVs:</p>
-             <pre class="bg-dark text-light p-2 rounded" style="font-size: 0.8em; overflow-x: auto;"><code>ffmpeg -i [input.mkv] -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -movflags +faststart -y [output.mp4]</code></pre>
         </div>
     </div>
 </div>
@@ -63,38 +59,77 @@ document.addEventListener('DOMContentLoaded', function() {
     if (registerForm) {
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirm_password');
-        const confirmPasswordError = document.getElementById('confirmPasswordError');
+        const confirmPasswordErrorDiv = document.getElementById('confirmPasswordError'); // The div for feedback
 
-        function validatePasswords() {
-            if (passwordInput.value !== confirmPasswordInput.value && confirmPasswordInput.value !== '') {
-                confirmPasswordError.style.display = 'block';
+        function validatePasswordsMatch() {
+            if (passwordInput.value !== confirmPasswordInput.value) {
                 confirmPasswordInput.classList.add('is-invalid');
+                confirmPasswordErrorDiv.textContent = 'Passwords do not match.'; // Set text if needed, Bootstrap handles display
                 return false;
             } else {
-                confirmPasswordError.style.display = 'none';
                 confirmPasswordInput.classList.remove('is-invalid');
+                // confirmPasswordErrorDiv.textContent = ''; // Clear text, Bootstrap handles hiding
                 return true;
             }
         }
 
-        confirmPasswordInput.addEventListener('input', validatePasswords);
-        passwordInput.addEventListener('input', function() {
-            // Also validate confirm if main password changes and confirm has content
-            if (confirmPasswordInput.value !== '') {
-                validatePasswords();
-            }
-        });
+        // Validate on input for immediate feedback
+        if (confirmPasswordInput) {
+            confirmPasswordInput.addEventListener('input', validatePasswordsMatch);
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                // If confirm password has been touched and filled, re-validate
+                if (confirmPasswordInput.value !== '') {
+                    validatePasswordsMatch();
+                }
+            });
+        }
 
         registerForm.addEventListener('submit', function(e) {
-            if (!validatePasswords()) {
+            let formIsValid = true;
+
+            // Bootstrap 5 client-side validation (simple check for 'required' and 'minlength')
+            // For more complex patterns, you'd add more JS or rely on server-side.
+            Array.from(registerForm.elements).forEach(function(element) {
+                if (element.hasAttribute('required') && !element.value) {
+                    element.classList.add('is-invalid');
+                    formIsValid = false;
+                } else if (element.hasAttribute('minlength') && element.value.length < parseInt(element.getAttribute('minlength'))) {
+                    element.classList.add('is-invalid');
+                     // Get the invalid-feedback sibling to show a specific message if desired
+                    const feedback = element.parentElement.querySelector('.invalid-feedback');
+                    if(feedback && element.id === 'username') feedback.textContent = `Username must be at least ${element.getAttribute('minlength')} characters.`;
+                    if(feedback && element.id === 'password') feedback.textContent = `Password must be at least ${element.getAttribute('minlength')} characters.`;
+                    formIsValid = false;
+                } else {
+                    element.classList.remove('is-invalid');
+                }
+            });
+
+            if (!validatePasswordsMatch()) {
+                formIsValid = false;
+            }
+            
+            if (!formIsValid) {
                 e.preventDefault();
-                confirmPasswordInput.focus();
+                e.stopPropagation(); // Stop Bootstrap's own submit handling if we found errors
+                // Find first invalid input and focus it
+                const firstInvalid = registerForm.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
             }
-            // Add other client-side checks if needed (e.g., min length, though HTML5 `minlength` handles this)
-            if (passwordInput.value.length < 6) {
-                // This is redundant if minlength attribute is respected, but as a fallback
-                // You might show a more prominent error
-            }
+            // registerForm.classList.add('was-validated'); // Optional: if you want Bootstrap's default styling after first submit attempt
+        });
+
+        // Clear validation on input change after initial submit attempt or error
+        Array.from(registerForm.elements).forEach(function(element) {
+            element.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    this.classList.remove('is-invalid');
+                }
+            });
         });
     }
 });
