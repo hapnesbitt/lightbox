@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block title %}LightBox - Home{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8 offset-md-2">
+        {# --- Upload Form Card --- #}
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h2 class="card-title mb-0 h4">Upload New Media to a Lightbox</h2>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div class="mb-3">
+                        <label for="existing_batch_id" class="form-label">Target Lightbox (Batch)</label>
+                        <select class="form-select" id="existing_batch_id" name="existing_batch_id">
+                            <option value="">-- Create New Lightbox --</option>
+                            {% if batches %}
+                                {% for batch_item_for_select in batches %}
+                                    <option value="{{ batch_item_for_select.id }}">{{ batch_item_for_select.name }} ({{ batch_item_for_select.item_count }} items)</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="new-batch-name-group">
+                        <label for="batch_name" class="form-label">New Lightbox Name</label>
+                        <input type="text" class="form-control" id="batch_name" name="batch_name" placeholder="E.g., Summer Vacation 2023">
+                        <div class="form-text small">Only needed if "-- Create New Lightbox --" is selected above.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="files" class="form-label">Select Media Files</label>
+                        <input type="file" class="form-control" id="files" name="files[]" multiple required>
+                        <div class="form-text small upload-feedback">
+                            Allowed: Images, Videos, Audio, PDF. MKVs are converted.
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-upload me-2"></i>Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# --- Lightbox List --- #}
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-3 h4">Your Lightboxes</h2> {# Adjusted heading level for visual hierarchy #}
+            
+            {% if batches %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="batch-list-container">
+                    {% for batch in batches %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm batch-card" data-batch-id="{{ batch.id }}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start batch-name-header">
+                                        <h5 class="card-title batch-name-display me-2" title="{{ batch.name }}">{{ batch.name }}</h5>
+                                        <button class="btn btn-sm btn-link p-0 rename-batch-btn-list" title="Rename Lightbox">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                    </div>
+                                    <div class="rename-batch-form-list" style="display:none;">
+                                        <input type="text" class="form-control form-control-sm mb-1 new-batch-name-input-list" value="{{ batch.name }}" maxlength="255">
+                                        <button class="btn btn-sm btn-success save-rename-btn-list">Save</button>
+                                        <button class="btn btn-sm btn-light ms-1 cancel-rename-btn-list">Cancel</button>
+                                        <div class="rename-feedback-list form-text mt-1 small"></div>
+                                    </div>
+
+                                    <p class="card-text mt-1 small">
+                                        <small class="text-muted">Created: {{ batch.creation_timestamp|float|round(0)|int|timestamp_to_date }}</small><br>
+                                        <small class="text-muted">Items: <span class="batch-item-count">{{ batch.item_count }}</span></small>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2 mt-3">
+                                        <a href="{{ url_for('collection_view', batch_id=batch.id) }}" 
+                                           class="btn btn-outline-secondary btn-sm" 
+                                           title="View Gallery & Manage Items">
+                                            <i class="bi bi-images fs-5"></i> 
+                                            <span class="visually-hidden">View Gallery</span>
+                                        </a>
+
+                                        <a href="{{ url_for('slideshow', batch_id=batch.id) }}" 
+                                           class="btn btn-danger btn-lg rounded-circle p-0 d-flex align-items-center justify-content-center custom-play-btn" 
+                                           title="Play Slideshow"
+                                           style="width: 50px; height: 50px; line-height: 50px;">
+                                            <i class="bi bi-play-fill text-white"></i>
+                                            <span class="visually-hidden">Play Slideshow</span>
+                                        </a>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-info w-100 mt-2" onclick="selectBatchForUpload('{{ batch.id }}')">
+                                        <i class="bi bi-plus-circle-dotted me-1"></i> Add More Files to this Lightbox
+                                    </button>
+                                </div>
+                                <div class="card-footer bg-white d-flex justify-content-between">
+                                    <form action="{{ url_for('delete_batch', batch_id=batch.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this Lightbox and all its media? This action cannot be undone.');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash me-1"></i>Delete</button>
+                                    </form>
+                                    <a href="{{ url_for('export_batch', batch_id=batch.id) }}" class="btn btn-sm btn-success"><i class="bi bi-box-arrow-down me-1"></i>Export</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    You don't have any Lightboxes yet. Upload some media to get started!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {# Your existing JS for index.html interactivity - I've only changed one class name below for the file upload feedback #}
+    {{ super() if super }}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const existingBatchSelect = document.getElementById('existing_batch_id');
+        const newBatchNameGroup = document.getElementById('new-batch-name-group');
+        const newBatchNameInput = document.getElementById('batch_name'); 
+        const uploadForm = document.getElementById('uploadForm'); 
+        // For file upload feedback on index.html - target the new class
+        const fileUploadInput = document.querySelector('input[type="file"][name="files[]"]');
+        const feedbackEl = document.querySelector('.upload-feedback'); // Using new class
+
+        if (fileUploadInput && feedbackEl) {
+            const defaultFeedbackText = feedbackEl.textContent; // Store default
+            fileUploadInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    feedbackEl.textContent = `${this.files.length} file(s) selected.`;
+                } else {
+                    feedbackEl.textContent = defaultFeedbackText;
+                }
+            });
+        }
+        // ... rest of your existing index.html JS for batch selection/rename ...
+        // (Make sure any querySelectors in that JS still match if you changed class names above, e.g., for card titles or buttons)
+        function toggleNewBatchNameField() {
+            if (!existingBatchSelect || !newBatchNameGroup || !newBatchNameInput) return;
+            if (existingBatchSelect.value) {
+                newBatchNameGroup.style.display = 'none';
+                newBatchNameInput.removeAttribute('required');
+                newBatchNameInput.value = '';
+            } else {
+                newBatchNameGroup.style.display = 'block';
+                newBatchNameInput.setAttribute('required', 'required');
+            }
+        }
+
+        if (existingBatchSelect) {
+            toggleNewBatchNameField(); 
+            existingBatchSelect.addEventListener('change', toggleNewBatchNameField);
+        }
+
+        window.selectBatchForUpload = function(batchId) {
+            if (existingBatchSelect && uploadForm) {
+                existingBatchSelect.value = batchId;
+                toggleNewBatchNameField(); 
+                const formCard = uploadForm.closest('.card');
+                if (formCard) {
+                    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                const filesInput = document.getElementById('files');
+                if (filesInput) filesInput.focus();
+            }
+        }
+
+        const batchListContainer = document.getElementById('batch-list-container');
+        if (batchListContainer) {
+            batchListContainer.addEventListener('click', function(event) {
+                const target = event.target;
+                const renameBtn = target.closest('.rename-batch-btn-list');
+                const saveBtn = target.closest('.save-rename-btn-list');
+                const cancelBtn = target.closest('.cancel-rename-btn-list');
+
+                if (renameBtn) {
+                    event.preventDefault(); 
+                    const card = renameBtn.closest('.batch-card');
+                    if (!card) { console.error("Rename: No .batch-card parent found."); return; }
+                    const nameDisplay = card.querySelector('.batch-name-display');
+                    const renameForm = card.querySelector('.rename-batch-form-list');
+                    const nameInputEl = card.querySelector('.new-batch-name-input-list'); 
+                    const feedbackElList = card.querySelector('.rename-feedback-list'); // Renamed for clarity
+                    if (!nameDisplay || !renameForm || !nameInputEl || !feedbackElList) {
+                        console.error("Rename: Could not find all necessary elements in card:", card);
+                        return;
+                    }
+                    nameDisplay.style.display = 'none';
+                    renameBtn.style.display = 'none'; 
+                    renameForm.style.display = 'block';
+                    nameInputEl.value = nameDisplay.textContent.trim();
+                    nameInputEl.focus();
+                    feedbackElList.textContent = '';
+                    feedbackElList.className = 'rename-feedback-list form-text mt-1 small'; // Ensure class is reset
+                    return; 
+                }
+
+                if (cancelBtn) {
+                    event.preventDefault();
+                    const card = cancelBtn.closest('.batch-card');
+                    if (!card) { console.error("Cancel: No .batch-card parent found."); return; }
+                    const nameDisplay = card.querySelector('.batch-name-display');
+                    const renameForm = card.querySelector('.rename-batch-form-list');
+                    const feedbackElList = card.querySelector('.rename-feedback-list'); // Renamed
+                    const originalRenameButton = card.querySelector('.batch-name-header .rename-batch-btn-list');
+                    if (!nameDisplay || !renameForm || !feedbackElList || !originalRenameButton) {
+                        console.error("Cancel: Could not find all necessary elements in card:", card);
+                        return;
+                    }
+                    renameForm.style.display = 'none';
+                    nameDisplay.style.display = 'block';
+                    originalRenameButton.style.display = 'inline-block'; 
+                    feedbackElList.textContent = '';
+                    return; 
+                }
+
+                if (saveBtn) {
+                    event.preventDefault();
+                    const card = saveBtn.closest('.batch-card');
+                    if (!card) { console.error("Save: No .batch-card parent found."); return; }
+                    const batchId = card.dataset.batchId;
+                    const nameDisplay = card.querySelector('.batch-name-display');
+                    const renameForm = card.querySelector('.rename-batch-form-list');
+                    const nameInputEl = card.querySelector('.new-batch-name-input-list'); 
+                    const feedbackElList = card.querySelector('.rename-feedback-list'); // Renamed
+                    const originalRenameButton = card.querySelector('.batch-name-header .rename-batch-btn-list');
+                    if (!batchId || !nameDisplay || !renameForm || !nameInputEl || !feedbackElList || !originalRenameButton) {
+                        console.error("Save: Could not find all necessary elements in card:", card);
+                        return;
+                    }
+                    const newName = nameInputEl.value.trim();
+                    if (newName === '') {
+                        feedbackElList.textContent = 'Name cannot be empty.';
+                        feedbackElList.className = 'rename-feedback-list form-text mt-1 small text-danger'; // Add text-danger
+                        nameInputEl.classList.add('is-invalid');
+                        return;
+                    }
+                    nameInputEl.classList.remove('is-invalid');
+                    feedbackElList.className = 'rename-feedback-list form-text mt-1 small'; // Reset classes
+                    const originalSaveBtnText = saveBtn.innerHTML;
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+                    
+                    // Get CSRF token (ensure it's available - from uploadForm or a meta tag)
+                    const csrfToken = document.querySelector('#uploadForm input[name="csrf_token"]')?.value || 
+                                      document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+                    fetch(`/batch/${batchId}/rename`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/x-www-form-urlencoded', 
+                            'X-CSRFToken': csrfToken 
+                        },
+                        body: new URLSearchParams({ 'new_name': newName })
+                    })
+                    .then(response => { 
+                        if (!response.ok) { 
+                            return response.json().then(errData => { 
+                                errData.statusCode = response.status; throw errData; 
+                            }); 
+                        } 
+                        return response.json(); 
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            nameDisplay.textContent = data.new_name;
+                            renameForm.style.display = 'none';
+                            nameDisplay.style.display = 'block';
+                            originalRenameButton.style.display = 'inline-block';
+                            feedbackElList.textContent = data.message || 'Renamed successfully!';
+                            feedbackElList.classList.add('text-success');
+                            if (existingBatchSelect) {
+                                const targetBatchOption = existingBatchSelect.querySelector(`option[value="${batchId}"]`);
+                                if (targetBatchOption) {
+                                    const currentText = targetBatchOption.textContent;
+                                    const itemCountMatch = currentText.match(/\(\d+\s*items\)/);
+                                    const itemCountSuffix = itemCountMatch ? ` ${itemCountMatch[0]}` : '';
+                                    targetBatchOption.textContent = data.new_name + itemCountSuffix;
+                                }
+                            }
+                        } else {
+                            feedbackElList.textContent = data.message || 'An error occurred.';
+                            feedbackElList.classList.add('text-danger');
+                            nameInputEl.classList.add('is-invalid');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error during fetch for rename batch:', error);
+                        const message = error.message || (error.statusCode ? `Server error (${error.statusCode}).` : 'Network/server error.');
+                        feedbackElList.textContent = message;
+                        feedbackElList.classList.add('text-danger');
+                    })
+                    .finally(() => {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalSaveBtnText;
+                    });
+                    return; 
+                }
+            });
+            batchListContainer.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && event.target.matches('.new-batch-name-input-list')) {
+                    event.preventDefault();
+                    const card = event.target.closest('.batch-card');
+                    if (card) {
+                        const saveButtonInCard = card.querySelector('.save-rename-btn-list');
+                        if (saveButtonInCard) { saveButtonInCard.click(); }
+                    }
+                }
+            });
+        } 
+    });
+    </script>
+{% endblock %}

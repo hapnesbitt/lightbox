@@ -1,0 +1,142 @@
+{% extends "base.html" %} 
+
+{% block title %}View Shared: {{ batch.name if batch else 'Lightbox' }} - LightBox{% endblock %}
+
+{% block body_class %}public-view-page-body collection-page-body{% endblock %}
+
+{% block extra_css %}
+    {{ super() }} 
+    <style>
+        /* Styles to hide owner-specific controls and simplify public view */
+        .public-view-page-body .batch-actions .btn-success, /* Hide export */
+        .public-view-page-body .batch-actions .btn-danger, /* Hide delete batch */
+        .public-view-page-body .media-item .btn-toolbar { 
+            display: none !important;
+        }
+        /* Hide all navbar items except the brand for public view to simplify */
+        .public-view-page-body #navbarNav .nav-item {
+             display: none !important;
+        }
+        .public-view-page-body .card-body { 
+            padding-bottom: 0.75rem; /* Consistent padding */
+        }
+        .public-view-page-body .card-footer { 
+            display: none;
+        }
+        .public-view-header {
+            padding: 1rem 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 1.5rem;
+            display: flex; /* Use flex for better alignment of title and play button */
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        .public-view-header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem; /* Adjust margin */
+        }
+        .public-view-header .text-muted {
+            font-size: 0.9rem;
+        }
+        .public-view-header .batch-actions-public { /* Container for the play button */
+            margin-left: auto; /* Push to the right if space allows */
+            padding-top: 0.5rem; /* Spacing if it wraps below title */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="public-view-header">
+    {# Left side: Title and Info #}
+    <div>
+        <h1>Shared Lightbox: {{ batch.name|default('Untitled Batch') }}</h1>
+        {% if batch %}
+            {% if batch.creation_timestamp %}
+                <p class="text-muted mb-0">
+                    Created: {{ batch.creation_timestamp|timestamp_to_date }}
+                    {% if batch.item_count is defined %}
+                        | Items: {{ batch.item_count }} {# This is count of *completed* items from app.py #}
+                    {% endif %}
+                </p>
+            {% elif batch.item_count is defined %} {# Fallback if no creation_timestamp but has item_count #}
+                 <p class="text-muted mb-0">Items: {{ batch.item_count }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+    {# Right side: Prominent Play Button #}
+    {% if batch and batch.share_token and media_items and batch.item_count > 0 %} {# Only show if there are items #}
+    <div class="batch-actions-public">
+        <a href="{{ url_for('public_slideshow_view', share_token=batch.share_token) }}" 
+           class="btn btn-danger btn-lg rounded-circle p-0 d-flex align-items-center justify-content-center custom-play-btn" 
+           title="Play Slideshow"
+           style="width: 60px; height: 60px; line-height: 60px;"> {# Larger button #}
+            <i class="bi bi-play-fill text-white" style="font-size: 1.9rem;"></i> {# Larger icon #}
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% if media_items and batch.item_count > 0 %} {# Ensure there are completed items to show #}
+    <h3 class="mb-3 visually-hidden">Items in this Collection:</h3> {# Visually hidden as context is clear #}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 media-grid">
+        {% for item in media_items %}
+            {# In public_view, app.py already filters for completed & non-hidden items #}
+            <div class="col media-item">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-media-container">
+                        {% if item.mimetype and item.mimetype.startswith('image/') %}
+                            <img src="{{ item.web_path if item.web_path else url_for('static', filename='images/placeholder_image.png') }}" 
+                                 class="card-img-top media-thumbnail" 
+                                 alt="{{ item.original_filename|default('Image') }}"
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/broken_image.png') }}';">
+                        {% elif item.mimetype and item.mimetype.startswith('video/') %}
+                            <div class="media-thumbnail video-thumbnail" title="{{ item.original_filename|default('Video') }}">
+                                <i class="bi bi-film"></i>
+                                <span class="badge bg-secondary media-type-badge">Video</span>
+                            </div>
+                        {% elif item.mimetype and item.mimetype.startswith('audio/') %}
+                            <div class="media-thumbnail audio-thumbnail" title="{{ item.original_filename|default('Audio') }}">
+                                <i class="bi bi-music-note-beamed"></i>
+                                 <span class="badge bg-secondary media-type-badge">Audio</span>
+                            </div>
+                        {% else %}
+                            <div class="media-thumbnail unknown-thumbnail" title="{{ item.original_filename|default('File') }}">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <span class="badge bg-secondary media-type-badge">File</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body py-2 px-3"> {# Reduced padding for public view simplicity #}
+                        <p class="card-text small text-truncate mb-0" title="{{ item.original_filename|default('Untitled') }}">
+                            {{ item.original_filename|default('Untitled') }}
+                        </p>
+                        {# Type info can be redundant if icon is clear, optional #}
+                        {# <p class="card-text text-muted small"><small>{{ item.mimetype|default('Unknown') }}</small></p> #}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% elif batch and batch.id %} {# If batch exists but no viewable items #}
+    <div class="alert alert-info mt-4 text-center">
+        <p class="h4 mt-3">This shared collection is currently empty or has no viewable items.</p>
+        <p>The owner may be processing new uploads or has hidden all items.</p>
+    </div>
+{% else %}
+    {# Fallback if batch object itself is missing - should be caught by app.py usually #}
+    <div class="alert alert-warning mt-4">Could not load collection details. The link may be invalid.</div>
+{% endif %}
+
+<div class="mt-5 text-center">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-house-door"></i> Return to LightBox Home
+    </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ super() }}
+{# No specific JS needed on this page if the play button just links directly #}
+{% endblock %}

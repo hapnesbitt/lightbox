@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block body_class %}collection-page-body{% endblock %} 
+
+{% block title %}LightBox - {{ batch.name if batch else 'Collection' }}{% endblock %}
+
+{% block content %}
+<div class="batch-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <h1>{{ batch.name if batch else 'Unknown Batch' }}</h1>
+            {% if batch and batch.creation_timestamp %}
+            <p class="text-muted mb-0">
+                Created: {{ batch.creation_timestamp|timestamp_to_date }}
+                {% if batch.item_count is defined %}
+                    | Items: {{ batch.item_count }} 
+                {% endif %}
+            </p>
+            {% endif %}
+        </div>
+        <div class="batch-actions mt-2 mt-md-0 d-flex align-items-center">
+            {% if batch and batch.id %}
+            <a href="{{ url_for('slideshow', batch_id=batch.id) }}" 
+               class="btn btn-danger btn-lg rounded-circle p-0 d-flex align-items-center justify-content-center custom-play-btn me-3" 
+               title="Play Slideshow"
+               style="width: 55px; height: 55px; line-height: 55px;">
+                <i class="bi bi-play-fill text-white"></i> {# Inline style removed #}
+            </a>
+            <div class="ms-auto btn-group-sm"> 
+                <a href="{{ url_for('export_batch', batch_id=batch.id) }}" class="btn btn-success me-1">
+                    <i class="bi bi-download"></i> Export
+                </a>
+                <form action="{{ url_for('delete_batch', batch_id=batch.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this entire batch and all its media? This action cannot be undone.');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Batch
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# --- SHARING CONTROLS SECTION --- #}
+{% if batch and batch.id %} 
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Sharing Options</h5>
+    </div>
+    <div class="card-body">
+        {% if batch.is_shared_val == '1' %} 
+            <p>This batch is currently <strong>Publicly Shared</strong>.</p>
+            {% if batch.share_token_val %}
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="shareLinkInput" value="{{ url_for('public_batch_view', share_token=batch.share_token_val, _external=True) }}" readonly>
+                <button class="btn btn-outline-secondary" type="button" id="copyShareLinkBtn" title="Copy link to clipboard">
+                    <i class="bi bi-clipboard"></i> Copy
+                </button>
+            </div>
+            {% else %}
+            <p class="text-warning">Sharing is enabled, but no share token found. Please try toggling sharing off and on.</p>
+            {% endif %}
+            <form action="{{ url_for('toggle_share_batch', batch_id=batch.id ) }}" method="post" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-lock-fill"></i> Make Private
+                </button>
+            </form>
+        {% else %}
+            <p>This batch is currently <strong>Private</strong>.</p>
+            <form action="{{ url_for('toggle_share_batch', batch_id=batch.id ) }}" method="post" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-info">
+                    <i class="bi bi-share-fill"></i> Make Public & Get Link
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{# --- END OF SHARING CONTROLS SECTION --- #}
+
+
+{% if media_items %}
+    <div class="row">
+        <div class="col-12 mb-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <p class="mb-0"><strong>Media items (including processing/failed):</strong> {{ media_items|length }}</p>
+                <div class="btn-group mt-2 mt-md-0" role="group" aria-label="Filter media items">
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn active" data-filter="all">All</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="completed">Completed</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="processing">Processing</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="failed">Failed</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="visible">Visible (Completed)</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="hidden">Hidden (Completed)</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary filter-btn" data-filter="liked">Liked (Completed)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 media-grid">
+        {% for item in media_items %}
+            {% set is_hidden = item.is_hidden == '1' %}
+            {% set is_liked = item.is_liked == '1' %}
+            {% set processing_status = item.processing_status | default('completed') %}
+            {% set error_message = item.error_message | default('') %}
+            
+            <div class="col media-item 
+                        {% if is_hidden and processing_status == 'completed' %}hidden-item{% endif %} 
+                        {% if is_liked and processing_status == 'completed' %}liked-item{% endif %}
+                        status-{{ processing_status }}"
+                 data-status="{{ processing_status }}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-media-container">
+                        {% if processing_status == 'completed' %}
+                            {% if item.mimetype and item.mimetype.startswith('image/') %}
+                                <img src="{{ item.web_path if item.web_path else url_for('static', filename='images/placeholder_image.png') }}" 
+                                     class="card-img-top media-thumbnail" 
+                                     alt="{{ item.original_filename|default('Image') }}"
+                                     onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/broken_image.png') }}';">
+                            {% elif item.mimetype and item.mimetype.startswith('video/') %}
+                                <div class="media-thumbnail video-thumbnail" title="{{ item.original_filename|default('Video') }}">
+                                    <i class="bi bi-film"></i>
+                                    <span class="badge bg-secondary media-type-badge">Video</span>
+                                </div>
+                            {% elif item.mimetype and item.mimetype.startswith('audio/') %}
+                                <div class="media-thumbnail audio-thumbnail" title="{{ item.original_filename|default('Audio') }}">
+                                    <i class="bi bi-music-note-beamed"></i>
+                                    <span class="badge bg-secondary media-type-badge">Audio</span>
+                                </div>
+                            {% else %}
+                                <div class="media-thumbnail unknown-thumbnail" title="{{ item.original_filename|default('File') }}">
+                                    <i class="bi bi-file-earmark-binary"></i>
+                                    <span class="badge bg-secondary media-type-badge">File</span>
+                                </div>
+                            {% endif %}
+                        {% elif processing_status == 'queued' or processing_status == 'processing' %}
+                            <div class="media-thumbnail processing-thumbnail d-flex flex-column justify-content-center align-items-center text-muted">
+                                <div class="spinner-border text-primary mb-2" role="status" style="width: 1.5rem; height: 1.5rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span class="processing-status-text" data-original-filename="{{ item.original_filename | e }}">Preparing</span> 
+                                <span class="badge bg-info mt-1">{{ item.mimetype | default('MKV') }}</span>
+                            </div>
+                        {% elif processing_status == 'failed' %}
+                            <div class="media-thumbnail failed-thumbnail d-flex flex-column justify-content-center align-items-center text-danger">
+                                <i class="bi bi-exclamation-octagon-fill h3 mb-2"></i>
+                                Processing Failed
+                                {% if error_message %}
+                                <small class="text-muted" title="{{ error_message }}"> ({{ error_message | truncate(30, True) }})</small>
+                                {% endif %}
+                                <span class="badge bg-danger media-type-badge">{{ item.mimetype | default('MKV') }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title" title="{{ item.original_filename|default('No filename') }}">
+                            {{ item.original_filename|default('Untitled') | truncate(50, True) }}
+                        </h5>
+                        <p class="card-text text-muted small mb-2 flex-grow-1">
+                            {% if processing_status == 'completed' %}
+                                Type: {{ item.mimetype|default('Unknown') }} <br>
+                                {% if is_hidden %}Status: Hidden{% endif %}
+                                {% if is_liked %}{% if is_hidden %}| {% endif %}Status: Liked{% endif %}
+                            {% elif processing_status == 'queued' %}
+                                Status: <span class="badge bg-secondary">Queued</span>
+                            {% elif processing_status == 'processing' %}
+                                Status: <span class="badge bg-info text-dark">Processing</span>
+                            {% elif processing_status == 'failed' %}
+                                Status: <span class="badge bg-danger">Failed</span>
+                            {% endif %}
+                        </p>
+                        
+                        {% if processing_status == 'completed' or processing_status == 'failed' %}
+                        <div class="btn-toolbar justify-content-between" role="toolbar">
+                            {% if processing_status == 'completed' %}
+                            <div class="btn-group me-2 mb-1" role="group">
+                                <form action="{{ url_for('toggle_hidden', media_id=item.id) }}" method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm {% if is_hidden %}btn-info{% else %}btn-outline-info{% endif %}" title="{% if is_hidden %}Make Visible{% else %}Hide Item{% endif %}">
+                                        <i class="bi {% if is_hidden %}bi-eye-slash-fill{% else %}bi-eye-fill{% endif %}"></i>
+                                    </button>
+                                </form>
+                                
+                                <form action="{{ url_for('toggle_liked', media_id=item.id) }}" method="post" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm {% if is_liked %}btn-warning{% else %}btn-outline-warning{% endif %}" title="{% if is_liked %}Remove Like{% else %}Like Item{% endif %}">
+                                        <i class="bi {% if is_liked %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                             <div class="me-2 mb-1"></div> 
+                            {% endif %}
+                            <div class="btn-group mb-1" role="group">
+                                <form action="{{ url_for('delete_media', media_id=item.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this media item? {% if processing_status != 'completed' %}It might still be processing or has failed.{% endif %}');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Item">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info mt-4">
+        <h4 class="alert-heading">No Media Items Yet!</h4>
+        <p>This lightbox batch is currently empty or all items are hidden under the current filter.</p>
+        <hr>
+        <p class="mb-0">Try uploading some files or adjust the filter above.</p>
+    </div>
+{% endif %}
+{% endblock %} 
+
+{% block extra_js %}
+{{ super() if super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter JavaScript
+    const filterButtons = document.querySelectorAll('.collection-page-body .filter-btn'); 
+    const mediaItemsElements = document.querySelectorAll('.collection-page-body .media-item'); 
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() { 
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active', 'btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            this.classList.add('active', 'btn-primary');
+            this.classList.remove('btn-outline-primary');
+            const filterType = this.getAttribute('data-filter');
+            mediaItemsElements.forEach(itemEl => {
+                let showItem = false;
+                const itemStatus = itemEl.getAttribute('data-status') || 'completed';
+                switch(filterType) {
+                    case 'all': showItem = true; break;
+                    case 'completed': showItem = (itemStatus === 'completed'); break;
+                    case 'processing': showItem = (itemStatus === 'queued' || itemStatus === 'processing'); break;
+                    case 'failed': showItem = (itemStatus === 'failed'); break;
+                    case 'visible': showItem = (itemStatus === 'completed' && !itemEl.classList.contains('hidden-item')); break;
+                    case 'hidden': showItem = (itemStatus === 'completed' && itemEl.classList.contains('hidden-item')); break;
+                    case 'liked': showItem = (itemStatus === 'completed' && itemEl.classList.contains('liked-item')); break;
+                }
+                itemEl.style.display = showItem ? '' : 'none'; 
+            });
+        });
+    });
+
+    // Copy Share Link JavaScript
+    const copyShareLinkBtn = document.getElementById('copyShareLinkBtn');
+    const shareLinkInput = document.getElementById('shareLinkInput');
+    if (copyShareLinkBtn && shareLinkInput) { 
+        copyShareLinkBtn.addEventListener('click', function() {
+            shareLinkInput.select(); shareLinkInput.setSelectionRange(0, 99999); 
+            try {
+                document.execCommand('copy'); 
+                const originalButtonText = this.innerHTML;
+                this.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
+                this.classList.add('btn-success'); this.classList.remove('btn-outline-secondary');
+                setTimeout(() => {
+                    this.innerHTML = originalButtonText;
+                    this.classList.remove('btn-success'); this.classList.add('btn-outline-secondary');
+                }, 2000);
+            } catch (err) {
+                console.error('Oops, unable to copy using execCommand', err);
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+                        const originalButtonText = this.innerHTML;
+                        this.innerHTML = '<i class="bi bi-check-lg"></i> Copied (nav)!';
+                        this.classList.add('btn-success'); this.classList.remove('btn-outline-secondary');
+                        setTimeout(() => {
+                            this.innerHTML = originalButtonText;
+                            this.classList.remove('btn-success'); this.classList.add('btn-outline-secondary');
+                        }, 2000);
+                    }).catch(clipErr => {
+                        console.error('navigator.clipboard.writeText failed:', clipErr);
+                        alert('Failed to copy the link. Please copy it manually.');
+                    });
+                } else {
+                    alert('Failed to copy the link. Please copy it manually.');
+                }
+            }
+        });
+    }
+
+    // --- Animated Processing Status ---
+    const processingStatusElements = document.querySelectorAll('.processing-status-text');
+    if (processingStatusElements.length > 0) {
+        const processingMessages = [
+            "Queued for processing...", "Preparing conversion...", "Analyzing streams...",
+            "Converting video stream...", "Processing audio data...", "Finalizing output...", "Almost there..."
+        ];
+        let messageIndex = 0;
+        let intervalId = null; 
+
+        function updateProcessingMessages() {
+            let stillProcessingAny = false;
+            processingStatusElements.forEach(el => {
+                const parentCard = el.closest('.media-item');
+                if (parentCard && (parentCard.dataset.status === 'queued' || parentCard.dataset.status === 'processing')) {
+                    el.textContent = processingMessages[messageIndex];
+                    stillProcessingAny = true;
+                }
+            });
+            messageIndex = (messageIndex + 1) % processingMessages.length;
+            if (!stillProcessingAny && intervalId) {
+                clearInterval(intervalId); 
+                console.log("All processing animations stopped.");
+            }
+        }
+        
+        if (Array.from(processingStatusElements).some(el => {
+            const parentCard = el.closest('.media-item');
+            return parentCard && (parentCard.dataset.status === 'queued' || parentCard.dataset.status === 'processing');
+        })) {
+            console.log("Animated processing status initiated for " + processingStatusElements.length + " items.");
+            setTimeout(() => { 
+                updateProcessingMessages();
+                intervalId = setInterval(updateProcessingMessages, 3000); 
+            }, 500);
+        }
+    }
+    // --- End Animated Processing Status ---
+
+    // --- Auto-refresh if items are processing ---
+    const isProcessingFlag = {{ is_any_item_processing | default(false) | tojson }};
+    if (isProcessingFlag) {
+        console.log("Collection: At least one item is processing, page will auto-refresh in 20 seconds.");
+        setTimeout(function() {
+            window.location.reload(true); 
+        }, 20000); 
+    }
+    // --- End Auto-refresh ---
+});
+</script>
+{% endblock %}

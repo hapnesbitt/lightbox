@@ -1,0 +1,48 @@
+{# Example: templates/partials/media_item_card.html #}
+{# This content is already within collection.html. You would use it like: #}
+{# {% include 'partials/media_item_card.html' with context item=item %} #}
+<div class="card media-card {% if item.is_hidden == '1' %}is-hidden{% endif %}" id="media-{{ item.id }}">
+    <div style="position: relative;">
+        {% if item.is_image %}
+            <img src="{{ item.full_path }}" alt="{{ item.original_filename }}" class="media-thumbnail">
+        {% elif item.is_video %}
+            <div class="media-thumbnail d-flex align-items-center justify-content-center bg-dark text-white">
+                <i class="bi bi-film" style="font-size: 3rem;"></i>
+            </div>
+        {% elif item.is_audio %}
+             <div class="media-thumbnail d-flex align-items-center justify-content-center bg-secondary text-white">
+                <i class="bi bi-music-note-beamed" style="font-size: 3rem;"></i>
+            </div>
+        {% else %}
+            <div class="media-thumbnail d-flex align-items-center justify-content-center">
+                <i class="bi bi-file-earmark-binary"></i>
+            </div>
+        {% endif %}
+        {% if item.is_hidden == '1' %}
+            <div class="hidden-overlay"><i class="bi bi-eye-slash-fill"></i> Hidden</div>
+        {% endif %}
+    </div>
+    <div class="media-card-body">
+        <small class="media-filename" title="{{ item.original_filename }}">{{ item.original_filename }}</small>
+        <div class="media-actions btn-group btn-group-sm w-100" role="group">
+            <form action="{{ url_for('toggle_hidden_media', media_id=item.id) }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-outline-secondary" title="{{ 'Unhide' if item.is_hidden == '1' else 'Hide' }}">
+                    <i class="bi bi-eye{{ '-slash' if item.is_hidden == '0' else '' }}-fill"></i>
+                </button>
+            </form>
+            <form action="{{ url_for('toggle_liked_media', media_id=item.id) }}" method="POST" class="d-inline">
+                 <button type="submit" class="btn btn-outline-danger" title="{{ 'Unlike' if item.is_liked == '1' else 'Like' }}">
+                    <i class="bi bi-heart{{ '-fill text-danger' if item.is_liked == '1' else '' }}"></i>
+                </button>
+            </form>
+            <a href="{{ item.full_path }}" class="btn btn-outline-primary" target="_blank" title="View Original">
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+            <form action="{{ url_for('delete_media_item', media_id=item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                <button type="submit" class="btn btn-outline-danger" title="Delete Item">
+                    <i class="bi bi-trash2-fill"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

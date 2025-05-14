@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% from "partials/_auth_info_block.html" import render_info_sections with context %} {# Import the macro #}
+
+{% block title %}LightBox - Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-5"> {# Slightly wider on medium, narrower on large for better text flow if info added #}
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white text-center">
+                <h2 class="card-title mb-0 h4">Login to LightBox</h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required autocomplete="username">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <p class="small">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+                </div>
+            </div>
+        </div>
+
+        {# Render only the copyright warning on the login page using the macro #}
+        {# This will appear below the login card #}
+        {{ render_info_sections(show_copyright_warning=true) }}
+        
+        {# Optional: A small link to a full "About" page if you create one later #}
+        {# 
+        <p class="text-center small text-muted mt-3">
+            <a href="{{ url_for('about_page') }}">About LightBox & Features</a>
+        </p>
+        #}
+
+    </div>
+</div>
+{% endblock %}

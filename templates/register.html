@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% from "partials/_auth_info_block.html" import render_info_sections with context %} {# Import the macro #}
+
+{% block title %}LightBox - Register{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-7 offset-md-1 col-lg-6 offset-lg-0 order-lg-2"> {# Form on the right for larger screens #}
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white text-center">
+                <h2 class="card-title mb-0 h4">Create Your LightBox Account</h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" id="registerForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required minlength="3" autocomplete="username">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6" autocomplete="new-password">
+                        <div id="passwordHelp" class="form-text small">Minimum 6 characters.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6" autocomplete="new-password">
+                        <div id="confirmPasswordError" class="form-text text-danger small" style="display: none;">Passwords do not match.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <p class="small">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-10 offset-md-1 col-lg-6 offset-lg-0 order-lg-1 mb-4"> {# Info on the left for larger screens #}
+        {# Use the macro to render desired sections for the registration page #}
+        {{ render_info_sections(show_welcome=true, show_getting_started=true, show_mkv_note=true, show_copyright_warning=true, show_contact=true) }}
+        
+        {# You could also include the full MKV command here if desired, outside the macro or by extending it #}
+        <div class="auth-info-section my-4 small text-muted">
+             <h5 class="h6"><i class="bi bi-tools"></i> Behind the Scenes: MKV Conversion</h5>
+             <p>For reference, this is similar to the <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">FFmpeg</a> command we use for MKVs:</p>
+             <pre class="bg-dark text-light p-2 rounded" style="font-size: 0.8em; overflow-x: auto;"><code>ffmpeg -i [input.mkv] -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -movflags +faststart -y [output.mp4]</code></pre>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+        function validatePasswords() {
+            if (passwordInput.value !== confirmPasswordInput.value && confirmPasswordInput.value !== '') {
+                confirmPasswordError.style.display = 'block';
+                confirmPasswordInput.classList.add('is-invalid');
+                return false;
+            } else {
+                confirmPasswordError.style.display = 'none';
+                confirmPasswordInput.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+        confirmPasswordInput.addEventListener('input', validatePasswords);
+        passwordInput.addEventListener('input', function() {
+            // Also validate confirm if main password changes and confirm has content
+            if (confirmPasswordInput.value !== '') {
+                validatePasswords();
+            }
+        });
+
+        registerForm.addEventListener('submit', function(e) {
+            if (!validatePasswords()) {
+                e.preventDefault();
+                confirmPasswordInput.focus();
+            }
+            // Add other client-side checks if needed (e.g., min length, though HTML5 `minlength` handles this)
+            if (passwordInput.value.length < 6) {
+                // This is redundant if minlength attribute is respected, but as a fallback
+                // You might show a more prominent error
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

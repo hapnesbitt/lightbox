@@ -1,0 +1,556 @@
+/* static/css/styles.css */
+
+/* --- CSS Custom Properties (Variables) --- */
+:root {
+    --lightbox-primary-color: #007bff;
+    --lightbox-primary-hover-color: #0056b3;
+    --lightbox-text-color: #333;
+    --lightbox-text-muted-color: #6c757d;
+    --lightbox-card-border-color: #dee2e6;
+    --lightbox-card-header-bg: #f8f9fa;
+    --lightbox-body-bg: #f0f2f5;
+}
+
+/* --- General Body & Typography --- */
+html {
+    height: 100%; 
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--lightbox-body-bg);
+    color: var(--lightbox-text-color);
+    padding-top: 70px; /* Assuming fixed navbar height */
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100%; 
+    line-height: 1.6;
+}
+
+/* Apply body_class from base.html if present for page-specific scoping */
+body.collection-page-body {
+    /* Specific styles for collection page body if needed */
+}
+body.slideshow-page-body {
+    background-color: #000 !important; 
+    color: #fff !important; 
+    padding-top: 0; 
+    height: 100vh; 
+    overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #343a40; /* Darker heading color */
+    font-weight: 500; 
+    margin-bottom: 0.75rem;
+}
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.5rem; }
+
+main.container.my-4 {
+    flex-grow: 1;
+}
+
+a {
+    color: var(--lightbox-primary-color);
+    text-decoration: none; 
+}
+a:hover {
+    color: var(--lightbox-primary-hover-color);
+    text-decoration: underline; 
+}
+
+/* Accessibility: Clearer focus states for keyboard users */
+*:focus-visible {
+    outline: 2px solid var(--lightbox-primary-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Similar to Bootstrap focus */
+}
+
+
+/* --- Navbar --- */
+.navbar {
+    min-height: 56px; 
+    /* border-bottom: 1px solid var(--lightbox-card-border-color); /* Handled by Bootstrap class */
+}
+
+.navbar-brand .lightbox-logo {
+    display: inline-block;
+    margin-right: 0.25rem;
+    font-size: 1.5em; 
+    vertical-align: middle; 
+    filter: drop-shadow(0 0 4px rgba(255, 223, 0, 0.8));
+    transition: transform 0.2s ease-in-out;
+}
+.navbar-brand:hover .lightbox-logo {
+    transform: rotate(-5deg) scale(1.1);
+}
+
+/* --- Footer --- */
+.footer {
+    font-size: 0.875em; 
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    /* background-color: var(--lightbox-card-header-bg); /* Handled by Bootstrap class */
+}
+.footer a.text-muted:hover {
+    color: var(--lightbox-primary-hover-color) !important; 
+}
+
+/* --- Cards --- */
+.card {
+    border: 1px solid var(--lightbox-card-border-color);
+    border-radius: 0.375rem; 
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+    margin-bottom: 1.5rem;
+}
+.card:hover {
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,.08)!important; 
+    transform: translateY(-3px); 
+}
+
+.card-header {
+    background-color: var(--lightbox-card-header-bg);
+    border-bottom: 1px solid var(--lightbox-card-border-color); 
+    font-weight: 500;
+}
+.card-header.bg-primary {
+    background-color: var(--lightbox-primary-color) !important;
+    color: white;
+}
+.card-title { 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.5rem; 
+}
+
+/* --- Buttons --- */
+.btn {
+    border-radius: 0.3rem; 
+    transition: all 0.15s ease-in-out;
+    font-weight: 500;
+}
+.btn:active { /* General active state for buttons */
+    transform: translateY(1px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.125);
+}
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.1);
+}
+
+.btn-outline-warning i.bi-star-fill,
+.btn-warning i.bi-star-fill {
+    color: #ffc107;
+}
+.btn-outline-warning:hover i.bi-star-fill,
+.btn-warning:hover i.bi-star-fill {
+    color: var(--lightbox-text-color);
+}
+.btn-outline-warning:hover i.bi-star {
+     color: #c69500;
+}
+
+/* --- Custom Iconic Play Buttons (index.html, collection.html) --- */
+.custom-play-btn {
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer; /* Added for better affordance */
+}
+.custom-play-btn.btn-danger {
+    border-color: rgba(255,255,255,0.3);
+}
+.custom-play-btn:hover {
+    transform: scale(1.1); 
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+}
+.custom-play-btn:active { /* Specific active state for these prominent buttons */
+    transform: scale(0.96) !important; /* Override general .btn:active transform if needed */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+.custom-play-btn i.bi-play-fill {
+    position: relative; 
+    left: 2px; 
+    font-size: 1.6em;
+}
+.batch-actions .custom-play-btn i.bi-play-fill {
+    font-size: 1.8em;
+    left: 2px; /* Keep consistent nudge */
+}
+
+.batch-card .btn-outline-secondary[title="View Gallery Details"] i {
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+.batch-card .btn-outline-secondary[title="View Gallery Details"]:hover i {
+    color: var(--lightbox-primary-color); 
+    transform: scale(1.1);
+}
+
+/* --- Flash Messages (Alerts) --- */
+.alert {
+    border-left-width: 5px;
+    border-radius: 0.3rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+}
+.alert-success { border-left-color: #198754; }
+.alert-danger  { border-left-color: #dc3545; }
+.alert-warning { border-left-color: #ffc107; }
+.alert-info    { border-left-color: #0dcaf0; }
+
+/* --- Utility Classes --- */
+.text-muted-light { color: #888 !important; }
+
+/* --- About Section on Index Page & Code Blocks --- */
+.list-group-item strong {
+    color: var(--lightbox-primary-hover-color); /* Use variable */
+}
+/* Standardize pre styling */
+pre, .about-section pre, #content pre { 
+    white-space: pre-wrap; 
+    word-break: break-word; /* Better than break-all for readability */
+    background-color: #282c34; 
+    color: #abb2bf; 
+    padding: 1em; /* Add some padding */
+    border-radius: 0.25rem;
+    border: 1px solid #3e4451;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* Monospace font stack */
+    font-size: 0.875em; /* Slightly smaller for code */
+    line-height: 1.5;
+    overflow-x: auto; /* Allow horizontal scrolling for long lines */
+}
+
+
+/* =========================================== */
+/* === Styles for Collection Page Specific === */
+/* =========================================== */
+.collection-page-body .card-media-container {
+    height: 180px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #e9ecef; /* Slightly lighter than #e0e0e0 */
+    border-bottom: 1px solid var(--lightbox-card-border-color); 
+    position: relative; 
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+.collection-page-body .media-thumbnail {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.collection-page-body .video-thumbnail,
+.collection-page-body .audio-thumbnail,
+.collection-page-body .unknown-thumbnail,
+.collection-page-body .processing-thumbnail,
+.collection-page-body .failed-thumbnail {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--lightbox-text-muted-color); 
+}
+.collection-page-body .video-thumbnail i,
+.collection-page-body .audio-thumbnail i,
+.collection-page-body .unknown-thumbnail i { /* Corrected typo */
+    font-size: 3.5rem; /* Slightly reduced from 4rem */
+    opacity: 0.5; /* Slightly less opaque */
+    color: #495057;
+}
+.collection-page-body .media-type-badge {
+    position: absolute;
+    top: 8px; /* Adjusted for better spacing */
+    right: 8px;
+    font-size: 0.7em; /* Slightly smaller badge */
+    padding: 0.25em 0.45em;
+    opacity: 0.9;
+}
+.collection-page-body .processing-thumbnail .spinner-border {
+    width: 2.25rem; 
+    height: 2.25rem;
+    border-width: 0.18rem; /* Slightly thinner border */
+}
+.collection-page-body .processing-status-text { 
+    font-weight: 500;
+    color: var(--lightbox-primary-color); 
+    margin-top: 0.25rem;
+    font-size: 0.9em;
+    animation: pulseStatus 1.8s infinite ease-in-out; /* Moved animation here */
+}
+@keyframes pulseStatus {
+  0%, 100% { opacity: 0.7; } /* Adjusted opacity for pulse */
+  50% { opacity: 1; }
+}
+.collection-page-body .failed-thumbnail i {
+    font-size: 2.8rem; /* Slightly smaller */
+}
+
+.collection-page-body .hidden-item .card {
+    opacity: 0.65; /* Slightly more opaque */
+    border: 1px dashed #999; /* Darker dashed border */
+}
+.collection-page-body .hidden-item .card:hover {
+    opacity: 1;
+    border-style: solid;
+    border-color: var(--lightbox-card-border-color); /* Use variable */
+}
+.collection-page-body .liked-item .card {
+    border: 2px solid #ffc107; 
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); /* Slightly softer shadow */
+}
+.collection-page-body .filter-btn {
+    font-weight: 500;
+}
+
+
+/* =========================================== */
+/* === Styles for Slideshow Page Specific === */
+/* =========================================== */
+.slideshow-page-body .navbar {
+    background-color: rgba(15, 15, 15, 0.88) !important; /* Slightly adjusted transparency */
+    border-bottom: 1px solid #222; /* Darker border */
+    position: fixed; 
+    top: 0; left: 0; right: 0;
+    z-index: 1070;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Base transition */
+}
+.slideshow-page-body .navbar.navbar-hidden { 
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none; /* CRITICAL for auto-hide */
+}
+
+.slideshow-page-body .navbar-light .navbar-brand,
+.slideshow-page-body .navbar-light .nav-link {
+    color: #eaeaea !important; 
+}
+.slideshow-page-body .navbar-light .nav-link:hover {
+    color: #ffffff !important;
+}
+.slideshow-page-body .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28230, 230, 230, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); /* Slightly adjusted color */
+}
+.slideshow-page-body .footer { display: none !important; } /* Ensure it's hidden */
+
+.slideshow-container {
+    width: 100%;
+    height: 100%; /* Changed from 100vh to 100% to work with body's 100vh */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000; 
+    position: relative; 
+}
+.slideshow-media {
+    max-width: 100%;
+    max-height: 100%;
+    display: none; /* JS will manage this */
+    object-fit: contain;
+    /* --- ADDED/MODIFIED FOR TRANSITIONS --- */
+    opacity: 0; 
+    transition: opacity 0.3s ease-in-out; /* Matches MEDIA_TRANSITION_DURATION in JS */
+}
+.slideshow-media.media-active {
+    opacity: 1; 
+}
+
+/* Style for #slideshow-audio if it's displayed with its own controls */
+#slideshow-audio.media-active { /* If it's made display: block or flex by JS */
+    padding: 20px;
+    background-color: rgba(20,20,20,0.5); /* Example background if shown */
+    border-radius: 5px;
+    width: auto; /* Let browser size it based on controls attribute */
+    max-width: 80%;
+}
+
+
+.controls-container {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 60%, rgba(0,0,0,0) 100%);
+    padding: 15px 20px 20px 20px;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    z-index: 1060; 
+    min-height: 75px; 
+    box-sizing: border-box;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Base transition */
+}
+.slideshow-page-body .controls-container.controls-hidden { 
+    opacity: 0;
+    transform: translateY(100%);
+    pointer-events: none; /* CRITICAL for auto-hide */
+}
+
+.slideshow-controls {
+    display: flex;
+    gap: 15px; /* Slightly reduced gap */
+    align-items: center;
+    flex-grow: 1; 
+    justify-content: center; 
+}
+.progress-bar-group {
+    display: flex; 
+    align-items: center;
+    flex-grow: 1; 
+    margin: 0 15px; /* Slightly reduced margin */
+    min-width: 120px; 
+    max-width: 450px; 
+}
+/* More accessible range input styling */
+#media-progress-bar, .media-progress-bar-input,
+#volume-control, .volume-control-input {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent; /* Remove default background */
+    cursor: pointer;
+}
+/* Track */
+#media-progress-bar::-webkit-slider-runnable-track,
+.media-progress-bar-input::-webkit-slider-runnable-track,
+#volume-control::-webkit-slider-runnable-track,
+.volume-control-input::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.3);
+    height: 8px; /* Consistent height */
+    border-radius: 4px;
+}
+#media-progress-bar::-moz-range-track,
+.media-progress-bar-input::-moz-range-track,
+#volume-control::-moz-range-track,
+.volume-control-input::-moz-range-track {
+    background: rgba(255, 255, 255, 0.3);
+    height: 8px;
+    border-radius: 4px;
+}
+/* Thumb */
+#media-progress-bar::-webkit-slider-thumb,
+.media-progress-bar-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -4px; /* (track-height - thumb-height) / 2 assuming thumb is 16px */
+    background-color: #f0f0f0;
+    border: 1px solid #bbb;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+}
+#media-progress-bar::-moz-range-thumb,
+.media-progress-bar-input::-moz-range-thumb {
+    background-color: #f0f0f0;
+    border: 1px solid #bbb;
+    height: 14px; /* Firefox thumb often appears smaller */
+    width: 14px;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+#volume-control::-webkit-slider-thumb,
+.volume-control-input::-webkit-slider-thumb {
+     -webkit-appearance: none;
+    appearance: none;
+    margin-top: -4px;
+    background-color: #f0f0f0;
+    border: 1px solid #bbb;
+    height: 16px;
+    width: 12px; /* Make volume thumb slightly narrower */
+    border-radius: 3px;
+}
+#volume-control::-moz-range-thumb,
+.volume-control-input::-moz-range-thumb {
+    background-color: #f0f0f0;
+    border: 1px solid #bbb;
+    height: 14px;
+    width: 10px;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+#time-display, .time-display { 
+    color: #e0e0e0; font-size: 0.875em; /* Slightly smaller */
+    min-width: 90px; /* Adjusted min-width */
+    text-align: center; /* Center text if it wraps */
+}
+.volume-container { display: flex; align-items: center; gap: 8px; } /* Reduced gap */
+#volume-control, .volume-control-input { 
+    width: 70px; /* Adjusted */
+}
+
+.btn-control {
+    width: 42px; height: 42px; /* Slightly smaller */
+    background-color: rgba(255, 255, 255, 0.08); 
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f0f0f0; /* Ensure icon color is light */
+    font-size: 1.1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    display: inline-flex; /* For better icon centering */
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove padding if using flex for centering */
+}
+.btn-control:hover, .btn-control:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.45);
+    transform: translateY(-1px);
+}
+.btn-control:active { /* Specific active for these controls */
+    background-color: rgba(255,255,255,0.15);
+    transform: translateY(0px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.btn-play-pause {
+    width: 56px; height: 56px; font-size: 1.7rem;
+}
+#counter { color: #d0d0d0; margin: 0 10px; font-size: 0.9em; }
+
+#return-link {
+    position: fixed; 
+    top: 12px; 
+    left: 12px;
+    z-index: 1075; 
+    color: #ddd;
+    background-color: rgba(30, 30, 30, 0.7);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+#return-link:hover {
+    background-color: rgba(50, 50, 50, 0.85);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* --- Fullscreen Specific Adjustments --- */
+.slideshow-page-body .slideshow-container:fullscreen {
+    width: 100vw !important;  height: 100vh !important; margin: 0 !important; padding: 0 !important;
+    border: none !important; box-sizing: border-box !important; background-color: #000 !important;
+    /* margin-top: 0 !important; /* Already covered by margin: 0 */
+}
+.slideshow-page-body .slideshow-container:fullscreen .slideshow-media {
+    box-shadow: none !important; 
+}
+
+.slideshow-page-body:fullscreen .slideshow-container { /* If body is made fullscreen */
+    width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important;
+    border: none !important; box-sizing: border-box !important; background-color: #000 !important;
+}
+
+/* JS primarily handles hiding navbar/return-link via classes/direct style.
+   These CSS rules are fallbacks or can be removed if JS is fully reliable. */
+.slideshow-page-body .slideshow-container:fullscreen ~ .navbar,
+.slideshow-page-body .slideshow-container:fullscreen ~ #return-link {
+     /* display: none !important; */ /* Prefer JS control for this */
+}

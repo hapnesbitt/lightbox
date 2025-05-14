@@ -1,0 +1,47 @@
+{# templates/partials/_auth_info_block.html #}
+
+{# This macro can be called with specific sections to show #}
+{% macro render_info_sections(show_welcome=false, show_getting_started=false, show_mkv_note=false, show_copyright_warning=true, show_contact=false) %}
+    
+    {% if show_welcome %}
+    <div class="auth-info-section my-4">
+        <h3 class="h5 text-center">Welcome to LightBox!</h3>
+        <p class="small text-muted">Your simple tool for creating and sharing beautiful media slideshows. We're excited to have you!</p>
+    </div>
+    {% endif %}
+
+    {% if show_getting_started %}
+    <div class="auth-info-section my-4">
+        <h4 class="h6">Quick Start:</h4>
+        <ul class="list-unstyled small">
+            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Upload your images, videos, and audio.</li>
+            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Organize them into "Lightboxes" (collections).</li>
+            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Launch instant slideshows.</li>
+        </ul>
+        {# Optionally, a link to a more detailed about page could go here #}
+        {# <p class="small text-center mt-2"><a href="{{ url_for('about_page') }}">Learn more about all features...</a></p> #}
+    </div>
+    {% endif %}
+
+    {% if show_mkv_note %}
+    <div class="auth-info-section my-4">
+        <h4 class="h6"><i class="bi bi-film"></i> Note on MKV Files:</h4>
+        <p class="small text-muted">We convert MKV files to MP4 for best compatibility. This happens in the background after upload. <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer" class="small">Learn more about FFmpeg</a>.</p>
+        {# Again, a link to detailed About page could provide the full command #}
+    </div>
+    {% endif %}
+
+    {% if show_copyright_warning %}
+    <div class="alert alert-warning mt-4 mb-3" role="alert">
+        <h4 class="alert-heading h6"><i class="bi bi-exclamation-triangle-fill"></i> Important: Content & Copyright</h4>
+        <p class="small mb-0">By using LightBox, you agree to upload and share only <strong>your own personal media or content you have the rights to use.</strong> Please respect copyright laws. You are responsible for the content you manage on this platform.</p>
+    </div>
+    {% endif %}
+
+    {% if show_contact %}
+     <p class="small text-muted text-center mt-3">
+        Questions? Contact us at <a href="https://rossnesbitt.gotdns.com" target="_blank" rel="noopener noreferrer">rossnesbitt.gotdns.com</a>.
+    </p>
+    {% endif %}
+
+{% endmacro %}

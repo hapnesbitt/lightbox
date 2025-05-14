@@ -1,0 +1,35 @@
+{% macro render_field(field, label_text=None) %}
+    <div class="mb-3">
+        {% if label_text %}
+            <label for="{{ field.id }}" class="form-label">{{ label_text }}</label>
+        {% else %}
+            {{ field.label(class="form-label") }}
+        {% endif %}
+        
+        {{ field(class="form-control", **kwargs) }}
+        
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro render_checkbox_field(field, label_text=None) %}
+    <div class="mb-3 form-check">
+        {{ field(class="form-check-input", **kwargs) }}
+        
+        {% if label_text %}
+            <label for="{{ field.id }}" class="form-check-label">{{ label_text }}</label>
+        {% else %}
+            {{ field.label(class="form-check-label") }}
+        {% endif %}
+        
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endmacro %}

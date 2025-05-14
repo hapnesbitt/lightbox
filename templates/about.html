@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}About LightBox - Features & Information{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2"> {# Centered and readable width #}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h3 mb-0 text-center">About LightBox</h1>
+            </div>
+            <div class="card-body p-4">
+                <p class="lead">LightBox is your go-to tool for creating stunning and simple slideshows in minutes. Designed to be incredibly easy for everyone, from seniors sharing memories to professionals crafting presentations, LightBox helps you showcase your media beautifully.</p>
+                
+                <hr class="my-4">
+
+                <h2 class="h4 mb-3"><i class="bi bi-rocket-takeoff me-2"></i>Getting Started is Easy:</h2>
+                <ol class="list-group list-group-numbered mb-4">
+                    <li class="list-group-item"><strong>Upload Your Media:</strong> Select images, videos (MP4, MOV, WebM, etc.), or audio files. Create a new "Lightbox" or add to an existing one.</li>
+                    <li class="list-group-item"><strong>View Your Gallery:</strong> Manage your items in a clean gallery view. MKV files will show as "Processing" until converted to MP4.</li>
+                    <li class="list-group-item"><strong>Launch the Slideshow:</strong> Click the play button to view your media in a smooth presentation.</li>
+                    <li class="list-group-item"><strong>Manage Lightboxes:</strong> Rename, add more files, share, or delete your collections.</li>
+                </ol>
+
+                <h2 class="h4 mt-4 mb-2"><i class="bi bi-film me-2"></i>A Note on MKV File Uploads:</h2>
+                <p>LightBox accepts MKV files! For smooth playback, MKVs are automatically converted to a highly compatible MP4 format (H.264 video, AAC audio) in the background. You'll see a "Processing..." status, and they become available once conversion is complete.</p>
+                <p>The typical <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">FFmpeg</a> command used is:</p>
+                <pre class="bg-dark text-light p-3 rounded mb-3" style="font-size: 0.85em; overflow-x: auto;"><code>ffmpeg -i [input_mkv_file] -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -movflags +faststart -y [output_mp4_file]</code></pre>
+                <p class="small"><em>Future: We're exploring options for different quality presets.</em></p>
+                
+                <hr class="my-4">
+
+                <h2 class="h4 mt-4 mb-2"><i class="bi bi-github me-2"></i>Open Source & Contribution</h2>
+                <p>LightBox is an open-source project, primarily for educational purposes. We welcome contributions and feedback!</p>
+                <ul>
+                    <li><strong>View Source & Documentation:</strong> Find the complete source code, `README.md` (with setup instructions for Flask and Docker), and `CONTRIBUTING.md` on our <a href="YOUR_GITHUB_PROJECT_URL_HERE" target="_blank" rel="noopener noreferrer" class="fw-bold">GitHub Repository</a>.</li>
+                    <li><strong>Found a Bug? Have an Idea?</strong> Please open an issue on GitHub.</li>
+                </ul>
+
+                <hr class="my-4">
+                
+                <h2 class="h4 mt-4 mb-2"><i class="bi bi-person-lines-fill me-2"></i>Contact & Credits</h2>
+                <p>This project was developed by [Your Name/Handle]. You can find more projects and contact information at <a href="https://rossnesbitt.gotdns.com" target="_blank" rel="noopener noreferrer" class="fw-bold">rossnesbitt.gotdns.com</a>.</p>
+                <p class="small text-muted">LightBox utilizes wonderful open-source libraries including Flask, Celery, Redis, Bootstrap, and FFmpeg. Thank you to their respective communities!</p>
+
+            </div>
+        </div>
+        <div class="text-center mt-3 mb-4">
+             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary"><i class="bi bi-house-door me-1"></i> Back to My Lightboxes</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

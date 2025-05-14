@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{# Adds a class to the body tag for CSS scoping, defined in base.html #}
+{% block body_class %}slideshow-page-body{% endblock %}
+
+{# Modifies title based on public view status #}
+{% block title %}LightBox - {{ batch.name if batch else 'Slideshow' }} Slideshow {% if is_public_view %}(Public View){% endif %}{% endblock %}
+
+{# REMOVE the entire block extra_css as these styles are now in static/css/styles.css #}
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+
+{# Conditional "Return to Gallery" link based on view mode #}
+{% if is_public_view %}
+    {% if batch and batch.share_token %}
+    <a id="return-link" href="{{ url_for('public_batch_view', share_token=batch.share_token) }}" title="Return to Public Gallery View">
+        ← Return to Gallery
+    </a>
+    {% else %}
+    <a id="return-link" href="{{ url_for('index') }}" title="Go to Homepage">
+        ← Go Home
+    </a>
+    {% endif %}
+{% else %} {# Private view (owner/admin) #}
+    {% if batch and batch.id %}
+    <a id="return-link" href="{{ url_for('collection_view', batch_id=batch.id) }}" title="Return to Your Gallery">
+        ← Return to Gallery
+    </a>
+    {% endif %}
+{% endif %}
+
+<div id="slideshow-container" class="slideshow-container">
+    <img id="slideshow-image" class="slideshow-media" style="display: none;" alt="Slideshow Image Content">
+    {# Removed 'controls' attribute to use custom controls fully #}
+    <video id="slideshow-video" class="slideshow-media" style="display: none;" controls></video>
+    <audio id="slideshow-audio" class="slideshow-media" style="display: none;" controls></audio>
+    <!-- START: ADDED SPINNER DIV -->
+    <div class="loading-spinner" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
+        <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <!-- END: ADDED SPINNER DIV -->
+</div>
+
+<div class="controls-container">
+    {# Conditionally render the download button/container #}
+    {% if not is_public_view %}
+    <div class="download-container">
+        <a id="download-link" href="#" download>
+            <button class="btn-control" title="Download Current Item">
+                <i class="bi bi-download"></i>
+            </button>
+        </a>
+    </div>
+    {% else %}
+        {# Placeholder to maintain layout consistency when download button is absent #}
+        <div class="download-container" style="width: 46px; height: 46px;"></div>
+    {% endif %}
+
+    <div class="slideshow-controls"> {# Ensure this is a flex container for best layout e.g. in your CSS #}
+        <button id="prev-btn" class="btn-control" title="Previous (Left Arrow)">
+            <i class="bi bi-skip-backward-fill"></i>
+        </button>
+
+        <button id="play-pause-btn" class="btn-control btn-play-pause" title="Play/Pause (Spacebar)">
+            <i id="play-pause-icon" class="bi bi-play-fill"></i>
+        </button>
+
+        <button id="next-btn" class="btn-control" title="Next (Right Arrow)">
+            <i class="bi bi-skip-forward-fill"></i>
+        </button>
+
+        <!-- NEW: Media Progress Bar and Time Display -->
+        <div id="progress-bar-group" class="progress-bar-group" style="display: none;">
+            <input type="range" id="media-progress-bar" min="0" value="0" step="0.1" class="form-range media-progress-bar-input">
+            <span id="time-display" class="time-display">0:00 / 0:00</span>
+        </div>
+
+        <span id="counter">0/0</span> {# This is for item count, not media time #}
+
+        <div class="volume-container" title="Volume">
+            <i class="bi bi-volume-up"></i>
+            <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1" class="form-range volume-control-input">
+        </div>
+    </div>
+
+    <div class="fullscreen-container">
+        <button id="fullscreen-btn" class="btn-control" title="Toggle Fullscreen (F)">
+            <i class="bi bi-fullscreen"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Embed media data and public view status as JSON for JavaScript -->
+<script>
+    const mediaItems = {{ media_data_json|safe }};
+    const isPublicSlideshowView = {{ is_public_view|tojson }};
+</script>
+{% endblock %}
+
+{% block extra_js %}
+{# Ensure your custom.js is linked here or in base.html #}
+{# Example: <script src="{{ url_for('static', filename='js/custom.js') }}"></script> #}
+{% endblock %}
