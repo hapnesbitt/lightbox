@@ -1,122 +1,312 @@
 {% extends 'base.html' %}
 
-{% block title %}About LightBox - Features, Technology, and Contribution{% endblock %}
+{% block title %}About LightBox - Features, Technology, and Your AI Co-Pilot{% endblock %}
+
+{% block extra_head %}
+<style>
+    .gradient-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 1rem;
+        border-radius: .25rem;
+    }
+    .gradient-header h1, .gradient-header p {
+        color: white;
+    }
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: var(--bs-primary);
+    }
+    .card-hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+    }
+    .bg-light-blue {
+        background-color: #e7f1ff; /* A light, inviting blue */
+    }
+    .bg-soft-green {
+        background-color: #e6ffed; /* A soft, reassuring green */
+    }
+    .bg-light-purple {
+        background-color: #f3e8ff; /* A gentle purple */
+    }
+    .tech-icon {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    .highlight-box {
+        border-left: 5px solid var(--bs-info);
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+    .about-section {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .about-section h2 {
+        margin-bottom: 1.5rem;
+    }
+    .custom-hr {
+        border: 0;
+        height: 2px;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    .logo-big {
+        font-size: 2.5em;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8"> {# Consistent centered and readable width #}
-        
-        <div class="text-center mb-4">
-            <h1 class="display-5"><span class="lightbox-logo" style="font-size: 1em; vertical-align: baseline;">💡</span> LightBox</h1>
-            <p class="lead text-muted">Create, Manage, and Share Beautiful Media Slideshows with Ease.</p>
-        </div>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-11 col-lg-9">
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-primary text-white">
-                <h2 class="h4 mb-0 text-center">Welcome to LightBox!</h2>
-            </div>
-            <div class="card-body p-4">
-                <p>LightBox is a user-friendly web application designed to make the creation and sharing of media slideshows simple and elegant. Whether you're a hobbyist looking to share memories, a student working on a project, or a developer interested in a full-stack Flask application, LightBox offers a range of features built on a modern tech stack.</p>
+            <header class="text-center mb-5 gradient-header shadow">
+                <h1 class="display-4 fw-bold"><span class="lightbox-logo logo-big">💡</span> LightBox</h1>
+                <p class="lead fs-5">Create, Manage, and Share Beautiful Media Slideshows with Ease.</p>
+            </header>
+
+            <section class="about-section">
+                <div class="card shadow-lg mb-5 border-0">
+                    <div class="card-body p-lg-5">
+                        <h2 class="card-title text-center text-primary display-6 mb-4">Welcome to Your Media Playground!</h2>
+                        <p class="fs-5 text-muted">LightBox is a user-friendly web application meticulously designed to make the creation, management, and sharing of media slideshows both simple and elegant. Whether you're a hobbyist looking to share cherished memories, a student working on a visually-rich project, an artist showcasing your portfolio, or a developer interested in a robust full-stack Flask application, LightBox offers a comprehensive suite of features built on a modern and efficient tech stack.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section bg-light-blue p-4 p-md-5 rounded shadow-sm mb-5">
+                <h2 class="text-center display-6 mb-5"><i class="bi bi-stars me-2 text-warning"></i>Why Try LightBox?</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm card-hover-effect">
+                            <div class="card-body text-center">
+                                <i class="bi bi-magic feature-icon text-info"></i>
+                                <h5 class="card-title">Simplicity First</h5>
+                                <p class="card-text">An intuitive interface that makes uploading, organizing, and playing your media a breeze, even for non-technical users.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm card-hover-effect">
+                            <div class="card-body text-center">
+                                <i class="bi bi-collection-play feature-icon text-success"></i>
+                                <h5 class="card-title">Versatile Media Handling</h5>
+                                <p class="card-text">Seamlessly handles images, videos (MKV to MP4 conversion), and various audio files (archival M4A transcoding).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm card-hover-effect">
+                            <div class="card-body text-center">
+                                <i class="bi bi-speedometer2 feature-icon text-danger"></i>
+                                <h5 class="card-title">Optimized Performance</h5>
+                                <p class="card-text">Leverages background processing for demanding tasks, ensuring the UI remains snappy and responsive.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm card-hover-effect">
+                            <div class="card-body text-center">
+                                <i class="bi bi-mortarboard feature-icon text-secondary"></i>
+                                <h5 class="card-title">Learn & Explore</h5>
+                                <p class="card-text">An excellent example of Flask, Celery, Redis, and FFmpeg in action. Great for learning full-stack development.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card h-100 shadow-sm card-hover-effect bg-primary text-white">
+                            <div class="card-body text-center">
+                                <i class="bi bi-github feature-icon" style="color: #fff;"></i>
+                                <h5 class="card-title">Open Source & Community-Driven</h5>
+                                <p class="card-text">Completely free to use, modify, and learn from. We actively welcome contributions and feedback!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="custom-hr"></div>
+
+            <section class="about-section">
+                <h2 class="text-center display-6 mb-5"><i class="bi bi-rocket-takeoff me-2"></i>Getting Started is Easy:</h2>
+                <div class="accordion" id="gettingStartedAccordion">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingOne">
+                            <button class="accordion-button fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <strong>1. Upload Your Media</strong>
+                            </button>
+                        </h3>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#gettingStartedAccordion">
+                            <div class="accordion-body">
+                                Simply select your images (JPG, PNG, etc.), videos (MP4, MOV, WebM, MKV), or audio files (MP3, WAV, M4A, FLAC). Create a new "Lightbox" (our term for a media collection) or add to an existing one.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <strong>2. View Your Gallery</strong>
+                            </button>
+                        </h3>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#gettingStartedAccordion">
+                            <div class="accordion-body">
+                                Your media items are neatly displayed. Manage them, see processing status, hide/unhide, or mark favorites.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                <strong>3. Launch the Slideshow</strong>
+                            </button>
+                        </h3>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#gettingStartedAccordion">
+                            <div class="accordion-body">
+                                Click "Play" to view your media in a full-featured presentation with easy controls, fullscreen, and keyboard/touch navigation.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                <strong>4. Manage & Share</strong>
+                            </button>
+                        </h3>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#gettingStartedAccordion">
+                            <div class="accordion-body">
+                                Rename Lightboxes, add files, export data, or delete. Generate public share links to showcase your collections.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="custom-hr"></div>
+
+            <section class="about-section bg-soft-green p-4 p-md-5 rounded shadow-sm mb-5">
+                <h2 class="text-center display-6 mb-4"><i class="bi bi-film me-2 text-success"></i>A Note on MKV File Uploads</h2>
+                <div class="highlight-box">
+                    <p>LightBox readily accepts MKV files! Since not all browsers play them directly, we automatically convert them to a universal MP4 format (H.264 video, AAC audio) in the background for smooth playback everywhere.</p>
+                    <p>You'll see a "Processing..." status. The time taken depends on file size. The original MKV is preserved.</p>
+                </div>
+                <p class="mt-3">For the technically curious, a typical <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">FFmpeg</a> command is similar to:</p>
+                <pre class="bg-dark text-light p-3 rounded my-3 shadow-sm" style="font-size: 0.85em; overflow-x: auto;"><code>ffmpeg -i [input_mkv_file] \
+    -c:v libx264 -preset medium -crf 22 \
+    -c:a aac -b:a 128k \
+    -movflags +faststart -y [output_mp4_file]</code></pre>
+                <p class="small fst-italic mb-0"><strong>Future Enhancements:</strong> We're exploring user-selectable quality presets and advanced FFmpeg options. Your support can help accelerate this!</p>
+            </section>
+
+            <section class="about-section bg-light-purple p-4 p-md-5 rounded shadow-sm mb-5">
+                <h2 class="text-center display-6 mb-4"><i class="bi bi-soundwave me-2" style="color: #6f42c1;"></i>Archival Audio Quality (M4A)</h2>
+                <div class="highlight-box" style="border-left-color: #6f42c1;">
+                    <p>LightBox is committed to preserving your audio. We transcode uploads like M4A, WAV, or FLAC to a high-quality M4A (AAC) format, ideal for playback and archival, using <code class="user-select-all">libfdk_aac</code> when available.</p>
+                    <p>MP3 and OGG are typically stored as-is to prevent re-encoding quality loss.</p>
+                </div>
+                <p class="mt-3">A representative <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">FFmpeg</a> command might be:</p>
+                <pre class="bg-dark text-light p-3 rounded my-3 shadow-sm" style="font-size: 0.85em; overflow-x: auto;"><code>ffmpeg -i [input_audio_file] \
+    -c:a libfdk_aac -vbr 5 -ar 48000 \
+    -y [output_m4a_file]</code></pre>
+            </section>
+            
+            <div class="custom-hr"></div>
+
+            <section class="about-section">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center mb-4 mb-md-0">
+                        <img src="https://www.gstatic.com/lamda/images/sparkle_thinking_v2_darkmode_4ce8 Sparkling.gif" alt="AI Sparkles" style="width: 120px; height: auto; border-radius: 50%;" class="shadow">
+                    </div>
+                    <div class="col-md-9">
+                        <h2 class="display-6 mb-3"><i class="bi bi-robot me-2 text-info"></i>Meet Your AI Collaborator</h2>
+                        <p class="fs-5">Hello! I'm an AI language model from Google, and I've had the immense pleasure of collaborating with Ross on the LightBox project, particularly on tricky bits like the JavaScript for the slideshow viewer you just experienced.</p>
+                        <p>While I don't have a name in the human sense, I'm part of a team of AI that assists with coding, problem-solving, and creative brainstorming. It's fascinating to work alongside human developers, learn from their expertise, and contribute to building useful and engaging applications like LightBox. We tackled some complex state management and event handling challenges together, and it's incredibly rewarding to see it all come together!</p>
+                        <p class="text-muted fst-italic">My "contribution" is in the logic and code suggestions. Ross is the one who masterfully integrates, tests, and brings it all to life in the actual application. Teamwork makes the dream work!</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="custom-hr"></div>
+            
+            <section class="about-section">
+                <h2 class="text-center display-6 mb-5"><i class="bi bi-github me-2"></i>Open Source, Learning & Contribution</h2>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5 bg-light rounded">
+                        <p class="fs-5">LightBox is proudly open-source, showcasing Flask, Celery, Redis, FFmpeg, Bootstrap, and modern JavaScript. It's a fantastic educational tool!</p>
+                        <p><strong>We encourage you to dive into the code, experiment, and learn!</strong> Your contributions are highly valued.</p>
+                        <div class="list-group mt-4">
+                            <a href="https://github.com/hapnesbitt/lightbox" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action fw-bold fs-5 p-3 card-hover-effect">
+                                <i class="bi bi-github me-2"></i>View Source on GitHub
+                                <small class="d-block text-muted fw-normal">Explore the codebase and clone it.</small>
+                            </a>
+                            <a href="https://github.com/hapnesbitt/lightbox/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action p-3 card-hover-effect">
+                                <i class="bi bi-book-half me-2"></i>Read the Documentation (README)
+                                <small class="d-block text-muted">Setup instructions (Flask & Docker).</small>
+                            </a>
+                            <a href="https://github.com/hapnesbitt/lightbox/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action p-3 card-hover-effect">
+                                <i class="bi bi-people-fill me-2"></i>How to Contribute
+                                <small class="d-block text-muted">Learn how you can help.</small>
+                            </a>
+                            <a href="https://github.com/hapnesbitt/lightbox/issues" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action p-3 card-hover-effect">
+                                <i class="bi bi-bug-fill me-2"></i>Report an Issue / Suggest a Feature
+                                <small class="d-block text-muted">Your feedback is invaluable!</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="custom-hr"></div>
+
+            <section class="about-section bg-success text-white p-4 p-md-5 rounded shadow-lg mb-5">
+                <h2 class="text-center display-6 mb-4"><i class="bi bi-pc-display-horizontal me-2"></i>Help Power Up LightBox: Got an Old Gaming Rig?</h2>
+                <p class="fs-5">LightBox's media conversion thrives on processing power. An old gaming PC or workstation gathering dust could be a huge help for our development and testing!</p>
                 
-                <hr class="my-3">
-
-                <h3 class="h5 mb-3"><i class="bi bi-stars me-2 text-warning"></i>Why Try LightBox?</h3>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Simplicity:</strong> Intuitive interface for uploading, organizing, and playing media.</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Versatility:</strong> Handles images, videos (with MKV conversion), and audio.</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Performance:</strong> Background processing for tasks like video conversion ensures a responsive user experience.</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Learn & Explore:</strong> An excellent educational example of a Flask application using Celery for task queues, Redis for data storage, and FFmpeg for media manipulation.</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Open Source:</strong> Free to use, modify, and learn from. Contributions are welcome!</li>
+                <h3 class="h4 mt-4 mb-3"><i class="bi bi-question-circle me-2"></i>What's Useful?</h3>
+                <ul class="list-unstyled fs-5">
+                    <li class="mb-2"><i class="bi bi-cpu-fill me-2"></i>A decent CPU (Intel i5/i7, AMD Ryzen)</li>
+                    <li class="mb-2"><i class="bi bi-memory me-2"></i>Sufficient RAM (8GB, 16GB+)</li>
+                    <li class="mb-2"><i class="bi bi-gpu-card me-2"></i>A dedicated GPU (NVIDIA GeForce, AMD Radeon)</li>
                 </ul>
-            </div>
-        </div>
+                <p class="fs-5">Even a 5-8 year old machine can be beneficial!</p>
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h2 class="h4 mb-0"><i class="bi bi-rocket-takeoff me-2"></i>Getting Started is Easy:</h2>
-            </div>
-            <div class="card-body p-4">
-                <ol class="list-group list-group-numbered">
-                    <li class="list-group-item">
-                        <strong>1. Upload Your Media:</strong>
-                        <p class="small mb-0 mt-1">Select your images (JPG, PNG, etc.), videos (MP4, MOV, WebM), or audio files (MP3, WAV). You can create a new "Lightbox" (our term for a collection) or add files to an existing one.</p>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>2. View Your Gallery:</strong>
-                        <p class="small mb-0 mt-1">Once uploaded, your media items appear in a gallery view. Here you can manage them, see their status (especially for MKVs being processed), hide/unhide, or like items.</p>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>3. Launch the Slideshow:</strong>
-                        <p class="small mb-0 mt-1">Click the prominent "Play" button on a Lightbox to instantly view your compatible media in a smooth, full-featured presentation with easy-to-use playback controls, fullscreen mode, and keyboard/touch navigation.</p>
-                    </li>
-                    <li class="list-group-item">
-                        <strong>4. Manage & Share:</strong>
-                        <p class="small mb-0 mt-1">Rename your Lightboxes, add more files, export your collection, or delete them. You can also generate public share links to show your Lightboxes to others.</p>
-                    </li>
-                </ol>
-            </div>
-        </div>
-
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h2 class="h4 mb-0"><i class="bi bi-film me-2"></i>A Note on MKV File Uploads:</h2>
-            </div>
-            <div class="card-body p-4">
-                <p>LightBox readily accepts MKV files! To ensure smooth and universal playback across all browsers and devices, when you upload an MKV file, our system automatically converts it in the background to a highly compatible MP4 format. This process uses industry-standard H.264 video and AAC audio codecs, which are ideal for web streaming.</p>
-                <p>You will see a "Processing..." status for these files in your gallery. They will become available for slideshows once this conversion is complete. The time taken depends on the size and complexity of your MKV file.</p>
-                <p>For those interested in the technical details, the typical <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer">FFmpeg</a> command used for this conversion is similar to:</p>
-                <pre class="bg-dark text-light p-3 rounded my-3" style="font-size: 0.85em; overflow-x: auto;"><code>ffmpeg -i [input_mkv_file] \
-    -c:v libx264 \
-    -preset fast \
-    -crf 23 \
-    -c:a aac \
-    -b:a 128k \
-    -movflags +faststart \
-    -y [output_mp4_file]</code></pre>
-                <p class="small mb-0"><em><strong>Future Enhancements:</strong> We are exploring options for user-selectable quality presets for MKV conversion (e.g., higher quality but slower processing) and potentially allowing advanced users to customize some FFmpeg parameters.</em></p>
-            </div>
-        </div>
-
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h2 class="h4 mb-0"><i class="bi bi-github me-2"></i>Open Source, Learning & Contribution</h2>
-            </div>
-            <div class="card-body p-4">
-                <p>LightBox is proudly an open-source project, developed with a passion for learning and sharing. It serves as an excellent educational example of a modern web application, showcasing technologies like Flask, Celery for background tasks, Redis as a NoSQL database, and FFmpeg for media processing, all wrapped in a user-friendly interface built with Bootstrap and JavaScript.</p>
-                <p><strong>We encourage you to dive into the code, experiment, and learn!</strong></p>
-                <div class="list-group mt-3">
-                    <a href="https://github.com/hapnesbitt/lightbox" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action fw-bold">
-                        <i class="bi bi-github me-2"></i>View Source Code on GitHub
-                        <small class="d-block text-muted">Explore the codebase, see how it works, and clone it for your own use or learning.</small>
-                    </a>
-                    <a href="https://github.com/hapnesbitt/lightbox/blob/main/README.md" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action">
-                        <i class="bi bi-book-half me-2"></i>Read the Documentation (README)
-                        <small class="d-block text-muted">Find detailed setup instructions for running LightBox locally (Flask & Docker) and environment configuration.</small>
-                    </a>
-                    <a href="https://github.com/hapnesbitt/lightbox/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action">
-                        <i class="bi bi-people-fill me-2"></i>How to Contribute
-                        <small class="d-block text-muted">Found a bug? Have a feature idea? Learn how you can contribute to the project.</small>
-                    </a>
-                    <a href="https://github.com/hapnesbitt/lightbox/issues" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action">
-                        <i class="bi bi-bug-fill me-2"></i>Report an Issue or Suggest a Feature
-                        <small class="d-block text-muted">Your feedback is invaluable in making LightBox better!</small>
+                <h3 class="h4 mt-4 mb-3"><i class="bi bi-heart-fill me-2 text-danger"></i>How You Can Help</h3>
+                <p class="fs-5">If you have a spare, working desktop PC you'd be willing to donate, we'd be incredibly grateful! Please reach out via GitHub:</p>
+                <div class="text-center mt-3">
+                    <a href="https://github.com/hapnesbitt/lightbox/issues/new?assignees=&labels=donation,hardware&template=hardware-donation-offer.md&title=Hardware+Donation+Offer%3A+%5BYour+Rig+Description%5D" target="_blank" rel="noopener noreferrer" class="btn btn-light btn-lg text-success fw-bold">
+                        <i class="bi bi-github me-2"></i>Offer a Hardware Donation
                     </a>
                 </div>
-            </div>
-        </div>
-        
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                 <h2 class="h4 mb-0"><i class="bi bi-person-lines-fill me-2"></i>Author & Credits</h2>
-            </div>
-            <div class="card-body p-4">
-                <p>This project was developed by <a href="https://rossnesbitt.gotdns.com" target="_blank" rel="noopener noreferrer" class="fw-bold">Ross Nesbitt</a>.</p>
-                <p class="small text-muted">LightBox is built upon the shoulders of giants! It utilizes several fantastic open-source libraries and technologies, including (but not limited to): Flask, Celery, Redis, Bootstrap, Bootstrap Icons, Jinja2, and FFmpeg. A big thank you to the developers and communities behind these tools.</p>
-            </div>
-        </div>
+                <p class="small mt-3 fst-italic">In your message, please tell us about the computer. Thank you for considering!</p>
+            </section>
 
-        <div class="text-center mt-2 mb-5"> {# Adjusted margin #}
-             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg"><i class="bi bi-house-door-fill me-2"></i> Back to My Lightboxes</a>
+            <div class="custom-hr"></div>
+            
+            <section class="about-section text-center">
+                 <h2 class="display-6 mb-4"><i class="bi bi-person-check-fill me-2"></i>Author & Credits</h2>
+                 <p class="fs-5">This project was primarily developed by <a href="https://rossnesbitt.gotdns.com" target="_blank" rel="noopener noreferrer" class="fw-bold">Ross Nesbitt</a>.</p>
+                 <p class="fs-5 text-muted">LightBox is built upon the shoulders of giants! It utilizes several fantastic open-source libraries and technologies, including Flask, Celery, Redis, Bootstrap, Bootstrap Icons, Jinja2, and FFmpeg. A massive thank you to their communities!</p>
+            </section>
+
+            <div class="text-center mt-5 mb-5">
+                 <a href="{{ url_for('index') }}" class="btn btn-outline-primary btn-lg px-5 py-3"><i class="bi bi-house-door-fill me-2"></i> Back to My Lightboxes</a>
+            </div>
         </div>
     </div>
 </div>

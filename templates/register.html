@@ -1,133 +1,186 @@
 {% extends 'base.html' %}
 {% from "partials/_auth_info_block.html" import render_info_sections with context %}
 
-{% block title %}LightBox - Register{% endblock %}
+{% block title %}LightBox - Create Account{% endblock %}
+
+{% block content_wrapper_class %}auth-page-wrapper{% endblock %} {# Optional: For vertical centering #}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
-        <div class="card shadow mb-4">
-            <div class="card-header bg-white text-center">
-                <h1 class="card-title mb-0 h4">Create Your LightBox Account</h1>
-            </div>
-            <div class="card-body p-lg-4">
-                <div class="row">
-                    <div class="col-md-6 mb-4 mb-md-0">
-                        <form method="post" id="registerForm" novalidate> {# Added novalidate to allow our JS to fully control validation feedback #}
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" required minlength="3" autocomplete="username">
-                                <div class="invalid-feedback">Please choose a username (minimum 3 characters).</div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required minlength="6" autocomplete="new-password">
-                                <div class="form-text small">Minimum 6 characters.</div>
-                                <div class="invalid-feedback">Password must be at least 6 characters.</div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6" autocomplete="new-password">
-                                <div class="invalid-feedback" id="confirmPasswordError">Passwords do not match.</div> {# Changed to Bootstrap invalid-feedback #}
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary w-100">Register</button>
-                        </form>
-                        <div class="mt-3 text-center">
-                            <p class="small">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    <div class="col-lg-7 col-xl-6"> {# Adjusted col for a slightly more focused form area #}
+        <div class="card shadow-lg auth-card border-0">
+            <div class="card-body p-4 p-sm-5">
+                <div class="text-center mb-4">
+                     <a href="{{ url_for('index') }}" class="text-decoration-none">
+                        <h1 class="h2 fw-bold lightbox-logo mb-3"><i class="bi bi-lightbulb-fill"></i> LightBox</h1>
+                    </a>
+                    <p class="text-muted">Join LightBox and start creating beautiful slideshows!</p>
+                </div>
+
+                {% include 'partials/_flash_messages.html' %} {# Assuming you have this partial #}
+
+                {# Form takes full width on this side now #}
+                <form method="post" id="registerForm" action="{{ url_for('register') }}" novalidate>
+                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> 
+                    <div class="mb-3">
+                        <label for="username" class="form-label fs-6">Username</label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" required minlength="3" autocomplete="username" placeholder="Choose a username">
+                        <div class="invalid-feedback">Username must be at least 3 characters.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label fs-6">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" required minlength="6" autocomplete="new-password" placeholder="Create a password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Toggle password visibility">
+                                <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                            </button>
                         </div>
+                        <div class="form-text small ps-1">Minimum 6 characters.</div>
+                        <div class="invalid-feedback" id="passwordError">Password must be at least 6 characters.</div>
                     </div>
-                    <div class="col-md-6 border-md-start ps-md-4">
-                        {{ render_info_sections(show_welcome=true, show_getting_started=true, show_mkv_note=true, show_copyright_warning=true, show_contact=false) }}
+                    
+                    <div class="mb-4"> {# Increased bottom margin #}
+                        <label for="confirm_password" class="form-label fs-6">Confirm Password</label>
+                         <div class="input-group">
+                            <input type="password" class="form-control form-control-lg" id="confirm_password" name="confirm_password" required minlength="6" autocomplete="new-password" placeholder="Confirm your password">
+                            <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword" aria-label="Toggle confirm password visibility">
+                                <i class="bi bi-eye-slash" id="toggleConfirmIcon"></i>
+                            </button>
+                        </div>
+                        <div class="invalid-feedback" id="confirmPasswordError">Passwords do not match or are too short.</div>
                     </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+                    </div>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="small">Already have an account? <a href="{{ url_for('login') }}" class="fw-medium">Log In</a></p>
                 </div>
             </div>
         </div>
     </div>
+    {# The Info section can be moved below the card for a cleaner single-column form focus, or kept if desired #}
+    {# For a cleaner "pop" on the form itself, consider moving this info section to a separate "Why Register?" link or page #}
 </div>
+
+{# If you want the info section on the registration page, place it outside the form's col, e.g. #}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8 col-xl-7">
+         {{ render_info_sections(show_welcome=true, show_getting_started=true, show_mkv_note=false, show_copyright_warning=true, show_contact=false) }}
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 {{ super() }}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Helper function for password visibility toggles
+    function setupPasswordToggle(passwordFieldId, toggleButtonId, toggleIconId) {
+        const passwordField = document.getElementById(passwordFieldId);
+        const toggleButton = document.getElementById(toggleButtonId);
+        const toggleIcon = document.getElementById(toggleIconId);
+
+        if (passwordField && toggleButton && toggleIcon) {
+            toggleButton.addEventListener('click', function () {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                toggleIcon.classList.toggle('bi-eye');
+                toggleIcon.classList.toggle('bi-eye-slash');
+            });
+        }
+    }
+
+    setupPasswordToggle('password', 'togglePassword', 'toggleIcon');
+    setupPasswordToggle('confirm_password', 'toggleConfirmPassword', 'toggleConfirmIcon');
+
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirm_password');
-        const confirmPasswordErrorDiv = document.getElementById('confirmPasswordError'); // The div for feedback
+        const confirmPasswordErrorDiv = document.getElementById('confirmPasswordError');
+        const passwordErrorDiv = document.getElementById('passwordError'); // For password minlength
 
-        function validatePasswordsMatch() {
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                confirmPasswordInput.classList.add('is-invalid');
-                confirmPasswordErrorDiv.textContent = 'Passwords do not match.'; // Set text if needed, Bootstrap handles display
-                return false;
-            } else {
-                confirmPasswordInput.classList.remove('is-invalid');
-                // confirmPasswordErrorDiv.textContent = ''; // Clear text, Bootstrap handles hiding
-                return true;
+        function validatePasswords() {
+            let isValid = true;
+            // Password Min Length
+            if (passwordInput.value.length > 0 && passwordInput.value.length < parseInt(passwordInput.getAttribute('minlength'))) {
+                passwordInput.classList.add('is-invalid');
+                if (passwordErrorDiv) passwordErrorDiv.textContent = `Password must be at least ${passwordInput.getAttribute('minlength')} characters.`;
+                isValid = false;
+            } else if (passwordInput.value.length > 0) { // only remove is-invalid if it has content and is valid
+                passwordInput.classList.remove('is-invalid');
             }
+
+
+            // Confirm Password Match & Min Length (only if password itself is somewhat valid)
+            if (passwordInput.value.length >= parseInt(passwordInput.getAttribute('minlength'))) {
+                 if (confirmPasswordInput.value.length > 0 && passwordInput.value !== confirmPasswordInput.value) {
+                    confirmPasswordInput.classList.add('is-invalid');
+                    if (confirmPasswordErrorDiv) confirmPasswordErrorDiv.textContent = 'Passwords do not match.';
+                    isValid = false;
+                } else if (confirmPasswordInput.value.length > 0 && passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value.length < parseInt(confirmPasswordInput.getAttribute('minlength'))) {
+                    confirmPasswordInput.classList.add('is-invalid');
+                     if (confirmPasswordErrorDiv) confirmPasswordErrorDiv.textContent = `Confirmation must be at least ${confirmPasswordInput.getAttribute('minlength')} characters.`;
+                    isValid = false;
+                } else if (confirmPasswordInput.value.length > 0) { // only remove is-invalid if it has content and is valid
+                    confirmPasswordInput.classList.remove('is-invalid');
+                }
+            } else if (passwordInput.value.length > 0) { // If main password is too short, don't yet validate confirm_password for matching
+                 if (confirmPasswordInput.value.length > 0) confirmPasswordInput.classList.remove('is-invalid'); // clear if it was marked
+            }
+            return isValid;
         }
 
-        // Validate on input for immediate feedback
-        if (confirmPasswordInput) {
-            confirmPasswordInput.addEventListener('input', validatePasswordsMatch);
-        }
-        if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
-                // If confirm password has been touched and filled, re-validate
-                if (confirmPasswordInput.value !== '') {
-                    validatePasswordsMatch();
-                }
-            });
-        }
+        if (passwordInput) passwordInput.addEventListener('input', validatePasswords);
+        if (confirmPasswordInput) confirmPasswordInput.addEventListener('input', validatePasswords);
 
         registerForm.addEventListener('submit', function(e) {
-            let formIsValid = true;
+            let formIsValidOverall = true;
 
-            // Bootstrap 5 client-side validation (simple check for 'required' and 'minlength')
-            // For more complex patterns, you'd add more JS or rely on server-side.
+            // General required/minlength validation
             Array.from(registerForm.elements).forEach(function(element) {
-                if (element.hasAttribute('required') && !element.value) {
+                element.classList.remove('is-invalid'); // Reset first
+                if (element.hasAttribute('required') && !element.value.trim()) {
                     element.classList.add('is-invalid');
-                    formIsValid = false;
-                } else if (element.hasAttribute('minlength') && element.value.length < parseInt(element.getAttribute('minlength'))) {
-                    element.classList.add('is-invalid');
-                     // Get the invalid-feedback sibling to show a specific message if desired
                     const feedback = element.parentElement.querySelector('.invalid-feedback');
-                    if(feedback && element.id === 'username') feedback.textContent = `Username must be at least ${element.getAttribute('minlength')} characters.`;
-                    if(feedback && element.id === 'password') feedback.textContent = `Password must be at least ${element.getAttribute('minlength')} characters.`;
-                    formIsValid = false;
-                } else {
-                    element.classList.remove('is-invalid');
+                    if(feedback) feedback.textContent = "This field is required.";
+                    formIsValidOverall = false;
+                } else if (element.hasAttribute('minlength') && element.value.trim().length < parseInt(element.getAttribute('minlength'))) {
+                    element.classList.add('is-invalid');
+                    const feedback = element.parentElement.querySelector('.invalid-feedback');
+                    if(feedback) feedback.textContent = `${element.labels[0].textContent} must be at least ${element.getAttribute('minlength')} characters.`;
+                    formIsValidOverall = false;
                 }
             });
-
-            if (!validatePasswordsMatch()) {
-                formIsValid = false;
+            
+            if (!validatePasswords()) { // Re-run password specific validation
+                formIsValidOverall = false;
             }
             
-            if (!formIsValid) {
+            if (!formIsValidOverall) {
                 e.preventDefault();
-                e.stopPropagation(); // Stop Bootstrap's own submit handling if we found errors
-                // Find first invalid input and focus it
+                e.stopPropagation();
                 const firstInvalid = registerForm.querySelector('.is-invalid');
                 if (firstInvalid) {
                     firstInvalid.focus();
                 }
             }
-            // registerForm.classList.add('was-validated'); // Optional: if you want Bootstrap's default styling after first submit attempt
         });
 
-        // Clear validation on input change after initial submit attempt or error
+        // Optional: Clear validation on focus for a slightly different UX
         Array.from(registerForm.elements).forEach(function(element) {
-            element.addEventListener('input', function() {
+            element.addEventListener('focus', function() {
                 if (this.classList.contains('is-invalid')) {
-                    this.classList.remove('is-invalid');
+                    // this.classList.remove('is-invalid');
+                }
+            });
+             element.addEventListener('input', function() { // More standard: clear on input
+                if (this.classList.contains('is-invalid')) {
+                     this.classList.remove('is-invalid');
                 }
             });
         });

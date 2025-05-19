@@ -322,11 +322,20 @@ pre, .about-section pre, #content pre {
     z-index: 1070;
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Base transition */
 }
+
 .slideshow-page-body .navbar.navbar-hidden { 
     opacity: 0;
     transform: translateY(-100%);
     pointer-events: none; /* CRITICAL for auto-hide */
 }
+
+.slideshow-page-body #return-link.element-hidden-via-autohide {
+    opacity: 0;
+    transform: translateY(-100%); /* Slides up, like navbar */
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Match navbar hide */
+}
+
 
 .slideshow-page-body .navbar-light .navbar-brand,
 .slideshow-page-body .navbar-light .nav-link {
@@ -553,4 +562,124 @@ pre, .about-section pre, #content pre {
 .slideshow-page-body .slideshow-container:fullscreen ~ .navbar,
 .slideshow-page-body .slideshow-container:fullscreen ~ #return-link {
      /* display: none !important; */ /* Prefer JS control for this */
+}
+/* === NEW Styles for Enhanced Fullscreen Slideshow === */
+
+/* Main container when app-controlled fullscreen is active via JS */
+.slideshow-container.is-truly-fullscreen {
+    position: fixed !important; /* Override any relative positioning */
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;  /* Viewport width */
+    height: 100vh !important; /* Viewport height */
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #000 !important; /* Force black */
+    z-index: 2147483000 !important; /* High z-index, but below controls */
+    border: none !important;
+    box-sizing: border-box !important;
+    display: flex !important; /* Keep your centering */
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Styling for the media element when its container is in our app-controlled fullscreen */
+.slideshow-container.is-truly-fullscreen .slideshow-media {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    box-shadow: none !important;
+}
+
+/* Browser's native :fullscreen pseudo-class for the container */
+/* These ensure that if the browser API itself styles the element, it's consistent */
+.slideshow-container:fullscreen,
+.slideshow-container:-webkit-full-screen,
+.slideshow-container:-moz-full-screen, /* Just in case, though JS mostly handles vendor prefixes */
+.slideshow-container:-ms-fullscreen {
+    background-color: #000 !important; /* Ensure black background in native FS */
+    /* Width, height, top, left are usually handled by the browser's :fullscreen */
+}
+
+.slideshow-container:fullscreen .slideshow-media,
+.slideshow-container:-webkit-full-screen .slideshow-media,
+.slideshow-container:-moz-full-screen .slideshow-media,
+.slideshow-container:-ms-fullscreen .slideshow-media {
+    box-shadow: none !important;
+}
+
+/* Navbar when it needs to be definitively hidden in fullscreen */
+/* Your existing .slideshow-page-body .navbar.navbar-hidden with opacity/transform is for SMOOTH auto-hide */
+/* This .navbar-hidden-true is for INSTANT hide/override if needed by JS during FS state changes */
+.slideshow-page-body .navbar.navbar-hidden-true {
+    display: none !important;
+}
+
+/* Return link when it needs to be definitively hidden in fullscreen */
+.slideshow-page-body #return-link.element-hidden-in-fullscreen {
+    display: none !important;
+}
+
+/* Controls container when it needs to be definitively hidden (e.g., if NATIVE media player goes fullscreen) */
+.slideshow-page-body .controls-container.controls-truly-hidden {
+    display: none !important; 
+}
+
+/* Ensure controls are above the fullscreen slideshow content */
+.slideshow-page-body .controls-container {
+    z-index: 2147483500; /* Higher than slideshow-container */
+}
+.slideshow-page-body .navbar { /* If not hidden */
+    z-index: 2147483500; /* Higher than slideshow-container */
+}
+.slideshow-page-body #return-link { /* If not hidden */
+    z-index: 2147483500; /* Higher than slideshow-container */
+}
+/* --- Fullscreen Slideshow Styling --- */
+
+/* Fullscreen specific styling for the CONTAINER */
+#slideshow-container:-webkit-full-screen,
+#slideshow-container:-moz-full-screen,
+#slideshow-container:-ms-fullscreen,
+#slideshow-container:fullscreen,
+#slideshow-container.is-truly-fullscreen { /* Your custom class from CHUNK 1 in JS */
+    display: flex; /* Crucial for centering the child image/video */
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* Or your desired fullscreen background */
+    width: 100vw !important;  /* Use !important to override other width/height if necessary */
+    height: 100vh !important;
+    padding: 0; /* Remove any padding that might constrain children */
+    margin: 0;  /* Remove any margin */
+    overflow: hidden; /* Prevent any unexpected scrollbars */
+}
+
+/* Fullscreen specific styling for the IMAGE inside the fullscreen container */
+#slideshow-container:-webkit-full-screen #slideshow-image,
+#slideshow-container:-moz-full-screen #slideshow-image,
+#slideshow-container:-ms-fullscreen #slideshow-image,
+#slideshow-container:fullscreen #slideshow-image,
+#slideshow-container.is-truly-fullscreen #slideshow-image {
+    width: 100%;            /* Make image try to fill container width */
+    height: 100%;           /* Make image try to fill container height */
+    object-fit: contain;    /* Key: Scales image down/up to fit, maintains aspect ratio */
+                             /* Alternative: object-fit: cover; (fills screen, may crop image) */
+    max-width: 100%;        /* Ensures it doesn't try to be wider than container */
+    max-height: 100%;       /* Ensures it doesn't try to be taller than container */
+    display: block;         /* Good practice for images with object-fit */
+    margin: auto;           /* Helps center if 'contain' makes image smaller than container */
+}
+
+/* Ensure videos also behave well in your app's fullscreen mode */
+/* (You might already have good video scaling, but this ensures consistency) */
+#slideshow-container:-webkit-full-screen #slideshow-video,
+#slideshow-container:-moz-full-screen #slideshow-video,
+#slideshow-container:-ms-fullscreen #slideshow-video,
+#slideshow-container:fullscreen #slideshow-video,
+#slideshow-container.is-truly-fullscreen #slideshow-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Or 'cover' if you prefer */
+    max-width: 100%;
+    max-height: 100%;
 }

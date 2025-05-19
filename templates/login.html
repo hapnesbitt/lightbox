@@ -1,49 +1,82 @@
 {% extends 'base.html' %}
-{% from "partials/_auth_info_block.html" import render_info_sections with context %} {# Import the macro #}
+{% from "partials/_auth_info_block.html" import render_info_sections with context %}
 
 {% block title %}LightBox - Login{% endblock %}
 
+{% block content_wrapper_class %}auth-page-wrapper{% endblock %} {# Optional: For vertical centering via CSS #}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-5"> {# Slightly wider on medium, narrower on large for better text flow if info added #}
-        <div class="card shadow mb-4">
-            <div class="card-header bg-white text-center">
-                <h2 class="card-title mb-0 h4">Login to LightBox</h2>
-            </div>
-            <div class="card-body p-4">
-                <form method="post">
+    <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="card shadow-lg auth-card border-0"> {# Added auth-card, border-0 #}
+            <div class="card-body p-4 p-sm-5">
+                <div class="text-center mb-4">
+                    <a href="{{ url_for('index') }}" class="text-decoration-none">
+                        <h1 class="h2 fw-bold lightbox-logo mb-3"><i class="bi bi-lightbulb-fill"></i> LightBox</h1>
+                    </a>
+                    <p class="text-muted">Welcome! Please log in to access your LightBox.</p>
+                </div>
+
+                {% include 'partials/_flash_messages.html' %} {# Assuming you have this partial #}
+
+                <form method="post" action="{{ url_for('login') }}"> {# Explicit action #}
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    
                     <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required autocomplete="username">
+                        <label for="username" class="form-label fs-6">Username</label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+                    <div class="mb-4"> {# Increased bottom margin slightly #}
+                        <label for="password" class="form-label fs-6">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Toggle password visibility">
+                                <i class="bi bi-eye-slash" id="toggleIcon"></i>
+                            </button>
+                        </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    {# Add Remember Me if your form supports it #}
+                    {# <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                        <label class="form-check-label" for="remember_me">Remember Me</label>
+                    </div> #}
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Log In</button>
+                    </div>
                 </form>
                 
                 <div class="mt-4 text-center">
-                    <p class="small">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+                    {# <p class="small mb-1"><a href="#">Forgot Password?</a></p> #} {# Uncomment if you have forgot password #}
+                    <p class="small">Don't have an account? <a href="{{ url_for('register') }}" class="fw-medium">Sign Up</a></p>
                 </div>
             </div>
         </div>
 
-        {# Render only the copyright warning on the login page using the macro #}
-        {# This will appear below the login card #}
-        {{ render_info_sections(show_copyright_warning=true) }}
-        
-        {# Optional: A small link to a full "About" page if you create one later #}
-        {# 
-        <p class="text-center small text-muted mt-3">
-            <a href="{{ url_for('about_page') }}">About LightBox & Features</a>
-        </p>
-        #}
-
+        <div class="mt-4"> {# Moved info block outside and below the card #}
+             {{ render_info_sections(show_copyright_warning=true) }}
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePassword = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    if (togglePassword && password && toggleIcon) {
+        togglePassword.addEventListener('click', function (e) {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            toggleIcon.classList.toggle('bi-eye');
+            toggleIcon.classList.toggle('bi-eye-slash');
+        });
+    }
+});
+</script>
 {% endblock %}

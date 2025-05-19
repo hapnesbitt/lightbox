@@ -1,0 +1,13 @@
+{# templates/partials/_flash_messages.html #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {# Ensure category defaults to 'info' if it's empty or just 'message' #}
+            {% set alert_category = category if category and category != 'message' else 'info' %}
+            <div class="alert alert-{{ alert_category }} alert-dismissible fade show mb-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
