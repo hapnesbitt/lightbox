@@ -907,19 +907,54 @@ def change_user_password():
         flash("Database error changing password.", "danger")
     return redirect(url_for('admin_dashboard'))
 
-# --- Error handlers ---
+# -----------------------------------------------------------------------------
+# ERROR HANDLERS
+# -----------------------------------------------------------------------------
+
+@app.errorhandler(400)
+def bad_request_error(e):
+    error_description = getattr(e, 'description', "The browser (or proxy) sent a request that this server could not understand.")
+    error_title = "400 - Bad Request"
+    app.logger.warning(f"HTML 400 for {request.url}: {error_description}", exc_info=e if app.debug else False)
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        app.logger.warning(f"JSON 400 for {request.url}: {error_description}")
+        return jsonify(error="Bad Request", message=error_description), 400
+    return render_template('400.html', error_title=error_title, error_message=error_description), 400
+
+@app.errorhandler(401)
+def unauthorized_error(e):
+    error_description = getattr(e, 'description', "This server could not verify that you are authorized to access the URL requested. You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.")
+    error_title = "401 - Unauthorized"
+    app.logger.info(f"HTML 401 for {request.url}: {error_description}") # Changed to info as it's a common flow
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        app.logger.info(f"JSON 401 for {request.url}: {error_description}")
+        return jsonify(error="Unauthorized", message=error_description), 401
+    return render_template('401.html', error_title=error_title, error_message=error_description), 401
+
+@app.errorhandler(403)
+def forbidden_error(e):
+    error_description = getattr(e, 'description', "You don't have the permission to access the requested resource. It is either read-protected or not readable by the server.")
+    error_title = "403 - Forbidden"
+    app.logger.warning(f"HTML 403 for {request.url}: {error_description}", exc_info=e if app.debug else False)
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        app.logger.warning(f"JSON 403 for {request.url}: {error_description}")
+        return jsonify(error="Forbidden", message=error_description), 403
+    return render_template('403.html', error_title=error_title, error_message=error_description), 403
+
 @app.errorhandler(404)
-def page_not_found_error(e):
+def page_not_found_error(e): # Renamed from your original to match convention
     error_description = "Page not found."
-    if hasattr(e, 'description') and e.description: error_description = e.description
+    if hasattr(e, 'description') and e.description:
+        error_description = e.description
+    error_title = "404 - Page Not Found"
+    app.logger.warning(f"HTML 404 for {request.url}: {error_description}", exc_info=e if app.debug else False)
     if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
         app.logger.warning(f"JSON 404 for {request.url}: {error_description}")
         return jsonify(error="Not Found", message=error_description), 404
-    app.logger.warning(f"HTML 404 for {request.url}: {error_description}", exc_info=e if app.debug else False)
-    return render_template('404.html', error_title="404 - Page Not Found", error_message=error_description), 404
+    return render_template('404.html', error_title=error_title, error_message=error_description), 404
 
 @app.errorhandler(413)
-def request_entity_too_large_error(e):
+def request_entity_too_large_error(e): # Your existing function name was good
     max_size_bytes = app.config.get('MAX_CONTENT_LENGTH', 0)
     max_size_readable = "configured limit"
     if max_size_bytes > 0:
@@ -927,27 +962,60 @@ def request_entity_too_large_error(e):
         if max_size_bytes >= gb_factor: max_size_readable = f"{max_size_bytes / gb_factor:.1f} GB"
         elif max_size_bytes >= mb_factor: max_size_readable = f"{max_size_bytes / mb_factor:.0f} MB"
         else: max_size_readable = f"{max_size_bytes / kb_factor:.0f} KB"
+    
     flash_message = f"Upload failed: File(s) too large. Maximum allowed is {max_size_readable}."
+    error_title = "413 - Payload Too Large"
+    
     app.logger.warning(f"413 - Request entity too large for {request.url}. {flash_message}")
+    
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        return jsonify(error="Payload Too Large", message=flash_message, limit=max_size_readable), 413
+
     flash(flash_message, "danger")
-    if request.referrer and request.referrer != request.url: return redirect(request.referrer), 413
-    return redirect(url_for('index')), 413
+    if request.referrer and request.referrer != request.url:
+        return redirect(request.referrer) # Status code 413 is implied by Werkzeug for the exception
+
+    # Fallback to rendering the 413.html page if not redirecting or JSON
+    return render_template('413.html', error_title=error_title, error_message=flash_message, max_upload_size=max_size_readable), 413
+
+@app.errorhandler(429)
+def too_many_requests_error(e):
+    error_description = getattr(e, 'description', "You have sent too many requests in a given amount of time.")
+    error_title = "429 - Too Many Requests"
+    app.logger.warning(f"HTML 429 for {request.url}: {error_description}", exc_info=e if app.debug else False)
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        app.logger.warning(f"JSON 429 for {request.url}: {error_description}")
+        # Flask-Limiter often puts retry-after information in e.headers
+        headers = getattr(e, 'headers', {})
+        return jsonify(error="Too Many Requests", message=error_description), 429, headers
+    return render_template('429.html', error_title=error_title, error_message=error_description), 429
 
 @app.errorhandler(500)
-def internal_server_error(e):
+def internal_server_error(e): # Your existing function name was good
     original_exception_str = str(getattr(e, 'original_exception', e))
+    error_title = "500 - Server Error"
+    error_message_for_template = "Something went wrong on our end. Please try again later or contact support if the issue persists."
+    
     app.logger.error(f"500 - Internal Server Error at {request.url}: {original_exception_str}", exc_info=True)
+    
     if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
-        return jsonify(error="Internal Server Error", message="An unexpected server error occurred on the server."), 500
-    return render_template('500.html', error_title="500 - Server Error", error_message="Something went wrong. Please try again later or contact support if the issue persists."), 500
+        return jsonify(error="Internal Server Error", message="An unexpected error occurred on the server."), 500
+    return render_template('500.html', error_title=error_title, error_message=error_message_for_template), 500
 
-@app.errorhandler(503) 
-def service_unavailable_error(e):
-    error_desc = getattr(e, 'description', "A required service is temporarily unavailable.")
-    app.logger.error(f"503 - Service Unavailable at {request.url}: {error_desc}", exc_info=True if app.debug else False)
+@app.errorhandler(503)
+def service_unavailable_error(e): # Your existing function name was good
+    error_description = getattr(e, 'description', "A required service is temporarily unavailable or the server is currently unable to handle the request due to a temporary overloading or maintenance of the server.")
+    error_title = "503 - Service Unavailable"
+    
+    app.logger.error(f"503 - Service Unavailable at {request.url}: {error_description}", exc_info=True if app.debug else False) # Maintained your exc_info logic
+    
     if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
-        return jsonify(error="Service Unavailable", message=error_desc), 503
-    return render_template('503.html', error_title="503 - Service Unavailable", error_message=error_desc), 503
+        # Some rate limiters or proxies might add Retry-After header to the exception
+        headers = getattr(e, 'headers', {})
+        return jsonify(error="Service Unavailable", message=error_description), 503, headers
+    return render_template('503.html', error_title=error_title, error_message=error_description), 503
+
+# -----------------------------------------------------------------------------
 
 # --- Main Execution ---
 if __name__ == '__main__':

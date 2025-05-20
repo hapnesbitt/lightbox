@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Service Unavailable - SimpleLightBox{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    {# Optional Icon: <i class="bi bi-cone-striped display-3 text-warning mb-3"></i> or <i class="bi bi-server display-3 text-warning mb-3"></i> #}
+    <h1 class="display-1">503</h1>
+    <p class="lead">Oops! Our service is temporarily unavailable.</p>
+    <p>This could be due to maintenance or a temporary overload. We're working to get things back online as soon as possible. Please try again in a few minutes.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+        <i class="bi bi-house-door-fill"></i> Go to Homepage
+    </a>
+    {# Optional: A refresh button #}
+    <button onclick="window.location.reload();" class="btn btn-secondary mt-3 ms-2">
+        <i class="bi bi-arrow-clockwise"></i> Try Again
+    </button>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Access Forbidden - SimpleLightBox{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    {# Optional Icon: <i class="bi bi-slash-circle-fill display-3 text-danger mb-3"></i> #}
+    <h1 class="display-1">403</h1>
+    <p class="lead">Oops! You don't have permission to access this page.</p>
+    <p>Even if you're logged in, this specific resource may require different access rights or is restricted.</p>
+    <p>If you believe this is an error, please contact support or try returning to the homepage.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+        <i class="bi bi-house-door-fill"></i> Go to Homepage
+    </a>
+</div>
+{% endblock %}

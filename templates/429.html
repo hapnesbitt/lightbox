@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Too Many Requests - SimpleLightBox{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    {# Optional Icon: <i class="bi bi-hourglass-split display-3 text-info mb-3"></i> #}
+    <h1 class="display-1">429</h1>
+    <p class="lead">Oops! You've made too many requests recently.</p>
+    <p>To protect our service, we limit the number of requests that can be made in a short period. Please wait a moment and try again.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+        <i class="bi bi-house-door-fill"></i> Go to Homepage
+    </a>
+</div>
+{% endblock %}

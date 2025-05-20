@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Authentication Required - SimpleLightBox{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    {# Optional Icon: <i class="bi bi-person-lock display-3 text-info mb-3"></i> #}
+    <h1 class="display-1">401</h1>
+    <p class="lead">Oops! You need to be logged in to access this page.</p>
+    <p>Please log in to continue. If you don't have an account, you can register.</p>
+    <div class="mt-3">
+        {# IMPORTANT: Replace 'auth.login' and 'auth.register' with your actual Flask endpoint names for login and registration #}
+        <a href="{{ url_for('login') }}" class="btn btn-success">
+            <i class="bi bi-box-arrow-in-right"></i> Log In
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-info ms-2">
+            <i class="bi bi-person-plus-fill"></i> Register
+        </a>
+    </div>
+    <p class="mt-4">Or, you can return to the homepage:</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-1">
+        <i class="bi bi-house-door-fill"></i> Go to Homepage
+    </a>
+</div>
+{% endblock %}

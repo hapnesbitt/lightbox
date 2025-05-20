@@ -1,0 +1,49 @@
+# .dockerignore
+
+# Python stuff
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Git directory
+.git/
+.gitignore
+
+# Docker specific (though usually Dockerfile itself is fine to be in context)
+# Dockerfile 
+# docker-compose.yml
+
+# User uploaded content - VERY IMPORTANT
+static/uploads/
+
+# Generated thumbnails (if any)
+static/thumbnails/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE / Editor specific
+.vscode/
+.idea/
+
+# Logs
+*.log
+gunicorn_access.log
+gunicorn_error.log
+
+# Local Gunicorn script (if you have one with secrets)
+gunicorn.sh 
+
+# Environment file (if it contains secrets and is not managed by Docker secrets/configs)
+.env 
+# Note: docker-compose can use .env, but you might not want it in the build context itself
+# if it's only for runtime. If your Dockerfile ever tries to COPY .env, this will prevent it.
