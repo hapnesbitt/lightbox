@@ -1,12 +1,8 @@
-# Stage 1: Build stage (if you have build-time dependencies not needed at runtime)
-# For this project, a single stage is likely sufficient for simplicity.
-
 # Choose an official Python runtime as a parent image
-# Replace 3.9 with your actual Python version (e.g., 3.8, 3.10, 3.11)
-# Using -slim-buster or -slim-bullseye can result in smaller images
-FROM python:3.9-slim-buster AS base
+# python:3.9-slim-buster is a good choice for a balance of size and compatibility.
+FROM python:3.9-slim-buster
 
-# Set environment variables
+# Set common environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -14,38 +10,38 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 # Install system dependencies
-# - FFmpeg for video processing
-# - libpq-dev if you were using PostgreSQL (not needed here for Redis)
-# - Other build-essential tools might be needed for some Python packages with C extensions
+# - FFmpeg for video/audio processing
+# - git for any pip installs directly from git repositories (if any in requirements.txt)
+#   (Often not needed if all packages are from PyPI)
+# - Other build tools might be needed if Python packages compile C extensions.
+#   Start minimal and add if pip install fails.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ffmpeg \
-        # Add other system dependencies if your Python packages need them for compilation
-        # For example: build-essential libffi-dev (often needed for cryptography, etc.)
-        # However, try without them first to keep the image smaller.
+        # Example: If a package needs git to install:
+        # git \
+        # Example: If a package needs C compilers:
+        # build-essential \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pipenv if you were using it (you are using requirements.txt, so this is not needed)
-# RUN pip install pipenv
-
-# Copy the requirements file into the container
+# Copy only the requirements file first to leverage Docker's build cache.
+# If requirements.txt doesn't change, this layer (and subsequent pip install) won't be rebuilt.
 COPY requirements.txt .
 
 # Install Python dependencies
-# Using --no-cache-dir can make the image slightly smaller
+# --no-cache-dir reduces image size by not storing the pip download cache.
+# --no-compile might be considered for slightly smaller images if .pyc files aren't critical for startup.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
+# Copy the rest of the application code into the container.
+# Ensure your .dockerignore file is set up to exclude unnecessary files/dirs
+# (like .git, .venv, __pycache__, static/uploads/, etc.)
 COPY . .
 
-# Expose the port Gunicorn will run on (if different from Flask dev server)
-# This is informational; docker-compose will handle actual port mapping.
-EXPOSE 5102 
+# EXPOSE is informational. The actual port mapping is done in docker-compose.yml.
+# This indicates that the application inside the container will listen on port 5102.
+EXPOSE 5102
 
-# Default command to run when the container starts (can be overridden by docker-compose)
-# This is just a placeholder; we'll define specific commands in docker-compose.yml
-# For example, for the web service, it would be gunicorn.
-# For the celery worker, it would be the celery command.
-# CMD ["flask", "run", "--host=0.0.0.0"] 
-
+# The CMD/ENTRYPOINT will be provided by docker-compose.yml for different services (web, worker).
+# No default CMD needed here if docker-compose always overrides it.

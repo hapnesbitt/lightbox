@@ -1,45 +1,44 @@
+version: '3.8' # It's good practice to specify a version
+
 services:
   redis:
-    image: "redis:alpine" # Using a small Redis image
+    image: "redis:alpine"
     container_name: lightbox_redis
     ports:
-      - "6379:6379" # Map host port to container port if you need to access Redis from host
+      - "6379:6379"
     volumes:
-      - redis_data:/data # Persist Redis data
-    # command: redis-server --requirepass YOUR_REDIS_PASSWORD # Uncomment and set if Redis needs a password
+      - redis_data:/data
+    # This command tells Redis to start and require the password 'simplenes'
+    command: ["redis-server", "--requirepass", "simplenes"]
     restart: always
 
   web:
-    build: . # Build the image from the Dockerfile in the current directory
+    build: .
     container_name: lightbox_web
-    # command: ./gunicorn.sh # We'll use a more Docker-friendly command or directly gunicorn
-    # The command in gunicorn.sh might source .venv which is not how Docker images usually work.
-    # We'll run gunicorn directly.
     command: gunicorn --workers 3 --bind 0.0.0.0:5102 app:app --access-logfile - --error-logfile - --log-level info
     volumes:
-      - ./static/uploads:/app/static/uploads # Mount user uploads volume
-      # If you generate thumbnails outside uploads, mount that too
-      # - ./static/thumbnails:/app/static/thumbnails 
+      - ./static/uploads:/app/static/uploads
+      # - ./static/thumbnails:/app/static/thumbnails # Uncomment if you use this
     ports:
-      - "5102:5102" # Map host port 5102 to container port 5102
+      - "5102:5102"
     env_file:
-      - ./.env # Load environment variables from .env file
+      - ./.env
     depends_on:
       - redis
     restart: unless-stopped
 
   worker:
-    build: . # Can use the same image as web
+    build: .
     container_name: lightbox_celery_worker
-    command: celery -A app.celery worker -l info -Q celery --concurrency=4 # Example concurrency
+    command: celery -A app.celery worker -l info -Q celery --concurrency=4
     volumes:
-      - ./static/uploads:/app/static/uploads # Celery worker needs access to process MKVs
+      - ./static/uploads:/app/static/uploads
     env_file:
       - ./.env
     depends_on:
       - redis
-      - web # Optional: worker might start after web is generally ready
+      # - web # Removing 'web' dependency for worker as it's not strictly necessary and can sometimes complicate startup order. Worker only needs Redis.
     restart: unless-stopped
 
 volumes:
-  redis_data: # Define the named volume for Redis persistence
+  redis_data:
