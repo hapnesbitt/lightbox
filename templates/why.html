@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Why LightBox? Save 98% on Storage & Support Community!{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+
+            <header class="text-center mb-4">
+                <h1 class="display-3 fw-bold text-primary">SAVE 98%</h1>
+                <p class="lead fs-4 text-danger fw-semibold">Fellow Americans -- The Cloud Tax Is Real!</p>
+            </header>
+
+            <!-- QR Code Section - First Instance (Near Top) -->
+            <section class="text-center mb-5">
+                <p class="fs-5">Disk drives are incredibly affordable but Cloud services are incredibly expensive! Why?<br>
+                <code class="fs-6">https://vid.mine.nu/why-lightbox</code></p>
+                <img src="{{ url_for('static', filename='images/qr_why_lightbox.png') }}" alt="QR Code: Why LightBox - Save 98%" class="img-fluid my-3" style="max-width: 150px; border: 1px solid #ccc; padding: 5px;">
+            </section>
+            <!-- End QR Code Section -->
+
+            <section class="mb-5 text-center">
+                <p class="fs-5 fst-italic">Give Yourself a Cloud Taxbreak -- You Deserve Lightbox!</p>
+            </section>
+
+            <hr class="my-5">
+
+            <section class="mb-5">
+                <h2 class="text-center fw-bold mb-4"><span class="text-warning">THE SHOCKING TRUTH</span> vs. <span class="text-success">OUR SOLUTION</span></h2>
+                <div class="row g-4 align-items-stretch">
+                    <!-- Our Solution Card -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-success border-2">
+                            <div class="card-header bg-success text-white text-center">
+                                <h3 class="fw-bold mb-0">💡 Our Solution: LightBox & Smart Storage</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="fs-5 card-text">Just <strong>$100/month for 20TB usable storage</strong> with a 5-year warranty.</p>
+                                <ul class="list-unstyled fs-5">
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Includes FREE access to 💡 LightBox - our beautiful media slideshow creator.</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Automatic video conversion (MKV → MP4) and audio archival quality preservation.</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Your data stays YOURS - on hardware YOU control.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- What Cloud Bros Charge Card -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-danger border-2">
+                            <div class="card-header bg-danger text-white text-center">
+                                <h3 class="fw-bold mb-0">☁️ What The Cloud Bros Charge</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="fs-5 card-text"><strong>$1,800 - $2,100 FOR JUST ONE MONTH</strong> of equivalent storage.</p>
+                                <ul class="list-unstyled fs-5">
+                                    <li class="mb-2"><i class="bi bi-x-circle-fill text-danger me-2"></i>That's $108,000 - $126,000 total cost over 5 years!</li>
+                                    <li class="mb-2"><i class="bi bi-x-circle-fill text-danger me-2"></i>Plus endless upsells for basic features we include for free!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="my-5">
+
+            <section class="mb-5 text-center bg-light p-4 rounded">
+                <h2 class="fw-bold mb-3 text-info">PHOTOGRAPHERS & CREATORS: STOP OVERPAYING!</h2>
+                <div class="row">
+                    <div class="col-md-6 offset-md-3">
+                        <ul class="list-group list-group-flush fs-5 text-start">
+                            <li class="list-group-item bg-transparent"><i class="bi bi-camera-fill text-info me-2"></i>Store ALL your RAW files, not just the ones that fit in your Google quota.</li>
+                            <li class="list-group-item bg-transparent"><i class="bi bi-images text-info me-2"></i>Create and share beautiful slideshows with our intuitive LightBox web app.</li>
+                            <li class="list-group-item bg-transparent"><i class="bi bi-gear-wide-connected text-info me-2"></i>Background processing handles all conversion & optimization while you work.</li>
+                            <li class="list-group-item bg-transparent"><i class="bi bi-unlock-fill text-info me-2"></i>No more "Storage Full" notifications from Google Photos or iCloud!</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <hr class="my-5">
+
+            <section class="mb-5">
+                <h2 class="text-center fw-bold mb-4">WHY THIS MAKES SENSE FOR EVERYONE</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h4 class="text-primary fw-semibold"><i class="bi bi-person-check-fill me-2"></i>For You (Photographers & Creators):</h4>
+                        <ul class="list-unstyled fs-5">
+                            <li class="mb-1"><i class="bi bi-piggy-bank-fill text-success me-2"></i><strong>98% SAVINGS</strong> compared to cloud providers.</li>
+                            <li class="mb-1"><i class="bi bi-shield-lock-fill text-success me-2"></i>Complete control of your own media library.</li>
+                            <li class="mb-1"><i class="bi bi-tools text-success me-2"></i>Intuitive tools to organize and showcase your work.</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="text-info fw-semibold"><i class="bi bi-people-fill me-2"></i>For Us (And Our Community):</h4>
+                        <ul class="list-unstyled fs-5">
+                            <li class="mb-1"><i class="bi bi-book-half text-info me-2"></i>We reinvest profits into community computer education.</li>
+                            <li class="mb-1"><i class="bi bi-recycle text-info me-2"></i>Our computer recycling centers operate as non-profits.</li>
+                            <li class="mb-1"><i class="bi bi-building-fill-gear text-info me-2"></i>We create local tech jobs instead of funding Silicon Valley mansions.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- QR Code Section - Second Instance (Near Bottom) -->
+            <section class="text-center my-5 p-4 bg-warning-subtle rounded">
+                <h3 class="fw-bold mb-3">Take the Next Step!</h3>
+                <p class="fs-5">Scan the QR code or visit <code>https://vid.mine.nu/why-lightbox</code> to revisit this information or share it with others.</p>
+                <img src="{{ url_for('static', filename='images/qr_why_lightbox.png') }}" alt="QR Code for Why LightBox Page" class="img-fluid my-3" style="max-width: 200px; border: 1px solid #ccc; padding: 5px;">
+                <p class="fs-4 fw-semibold mt-3 mb-3">Don't let the cloud bros convince you to pay monthly forever when there's a smarter alternative!</p>
+                <p class="fs-5">Sure, it makes financial sense, but you'll feel good while helping your company do well and supporting a mission that matters.</p>
+            </section>
+            <!-- End QR Code Section -->
+
+            <div class="text-center mt-5">
+                <a href="{{ url_for('about_page') }}" class="btn btn-outline-secondary me-2"><i class="bi bi-info-circle-fill me-2"></i>More About LightBox</a>
+                <a href="{{ url_for('index') }}" class="btn btn-primary"><i class="bi bi-house-door-fill me-2"></i>Back to My Lightboxes</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

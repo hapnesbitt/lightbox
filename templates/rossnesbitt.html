@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}About Ross Nesbitt - LightBox Developer{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+
+            <header class="text-center mb-5">
+                <h1 class="display-4 fw-bold">Ross Nesbitt</h1>
+                <p class="lead text-muted">Full-Stack Development & DevOps Acumen</p>
+            </header>
+
+            <section class="mb-4">
+                <p class="fs-5">Ross brings a pragmatic and tenacious approach to developing and deploying web applications. His work on the LightBox project highlights a versatile skill set encompassing:</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-code-slash me-2"></i>Robust Web Application Development</h4>
+                <p>Proficient in Python and Flask for creating dynamic web services, including user authentication, data handling, and RESTful API design principles. Demonstrates a clear understanding of front-end (Bootstrap, modern JavaScript) and back-end integration.</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-hdd-stack me-2"></i>Asynchronous Task Processing & Distributed Systems</h4>
+                <p>Effectively implements Celery with Redis as a message broker and result backend for managing computationally intensive background tasks (e.g., media transcoding), showcasing an understanding of distributed application architecture.</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-camera-reels me-2"></i>Media Manipulation Expertise</h4>
+                <p>Integrates FFmpeg for server-side media processing, with an eye for detail regarding specific codec support (e.g., AAC, AVI). While LightBox focuses on FFmpeg, this complements a deeper existing expertise in image manipulation, particularly with Ghostscript.</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-box-seam me-2"></i>Containerization & Orchestration Readiness</h4>
+                <p>Successfully Dockerized a multi-component application (Flask/Gunicorn, Celery, Redis), crafting Dockerfiles and Docker Compose configurations for consistent development and deployment environments across different operating systems (Linux, Windows via Docker Desktop). Comfortable with the principles required for scaling and managing containerized applications, with an indicated comfort zone extending towards Kubernetes orchestration.</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-terminal me-2"></i>DevOps & System Administration Fundamentals</h4>
+                <p>Demonstrates practical skills in Linux server administration, including service management (systemd for Gunicorn, Celery, Redis), environment configuration (`.env` files), troubleshooting network connectivity, and version control proficiency with Git for collaborative development and deployment.</p>
+            </section>
+
+            <section class="mb-4">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-lightbulb me-2"></i>Problem-Solving & Debugging</h4>
+                <p>Methodical and persistent in diagnosing and resolving complex issues, from application-level bugs to inter-service communication challenges in both native and containerized environments.</p>
+            </section>
+
+            <hr class="my-5">
+
+            <section class="text-center">
+                <p class="fs-5 fst-italic">Ross combines technical depth with a creative spirit (and a fondness for dancing dogs!), making him a valuable asset in developing and operationalizing sophisticated software solutions.</p>
+            </section>
+
+            <div class="text-center mt-5">
+                <a href="{{ url_for('about_page') }}" class="btn btn-outline-secondary me-2"><i class="bi bi-info-circle-fill me-2"></i>Back to About LightBox</a>
+                <a href="{{ url_for('index') }}" class="btn btn-primary"><i class="bi bi-house-door-fill me-2"></i>Back to My Lightboxes</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

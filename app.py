@@ -427,6 +427,14 @@ def about_page():
     # TODO: Update templates/about.html to reflect new audio (MP3) and video (MP4) conversion strategies.
     return render_template('about.html')
 
+@app.route('/ross-nesbitt') # Or any URL path you prefer, e.g., /developer, /meet-ross
+def ross_nesbitt_profile():
+    return render_template('rossnesbitt.html')
+
+@app.route('/why-lightbox') # Or /value, /save-money, /our-mission etc.
+def why_lightbox_page():
+    return render_template('why.html') # Or whatever you named your HTML file
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('username'): return redirect(url_for('index')) # If already logged in
