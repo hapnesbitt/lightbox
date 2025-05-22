@@ -3,14 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="LightBox - Your simple and powerful slideshow creation tool.">
+    
+    <!-- Page Description (Now a block for child templates to override) -->
+    <meta name="description" content="{% block meta_description %}LightBox - Your simple and powerful slideshow creation tool.{% endblock %}">
     
     <title>{% block title %}LightBox{% endblock %}</title>
     
-    <!-- Favicon Links -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    {# Consider adding more specific icons like apple-touch-icon.png #}
+    <!-- Favicon Links - Pointing to static/images/favicon/ -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon/favicon.svg') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/favicon/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='images/favicon/safari-pinned-tab.svg') }}" color="#5bbad5"> <!-- TODO: Update this color to your brand color -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon/favicon.ico') }}">
+    <meta name="msapplication-TileColor" content="#2d89ef"> <!-- TODO: Update this color to your brand color -->
+    {# <meta name="msapplication-config" content="{{ url_for('static', filename='images/favicon/browserconfig.xml') }}"> #} <!-- Uncomment if you have this file in static/images/favicon/ -->
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="{% filter striptags %}{% block og_title_content %}{{ self.title() }}{% endblock %}{% endfilter %}">
+    <meta property="og:description" content="{% block og_description_content %}{% filter striptags %}{{ self.meta_description() }}{% endfilter %}{% endblock %}">
+    {# Commented out until og-default-image.png is ready and path is confirmed #}
+    {# <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='images/favicon/og-default-image.png', _external=True) }}{% endblock %}"> #}
+    <meta property="og:site_name" content="LightBox">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ request.url }}">
+    <meta name="twitter:title" content="{% filter striptags %}{% block twitter_title_content %}{{ self.title() }}{% endblock %}{% endfilter %}">
+    <meta name="twitter:description" content="{% block twitter_description_content %}{% filter striptags %}{{ self.meta_description() }}{% endfilter %}{% endblock %}">
+    {# Commented out until og-default-image.png is ready and path is confirmed #}
+    {# <meta name="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='images/favicon/og-default-image.png', _external=True) }}{% endblock %}"> #}
+    {# <meta name="twitter:site" content="@YourTwitterHandle"> #}
+    {# <meta name="twitter:creator" content="@YourTwitterHandle"> #}
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -23,6 +51,9 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}">
+    {# Accessibility: Skip to main content link #}
+    <a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
+
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm fixed-top"> {# Added fixed-top for consistent behavior #}
         <div class="container">
@@ -93,8 +124,8 @@
     </div>
 
     <!-- Main Content -->
-    {# Ensure padding-top on body or margin-top on main accounts for fixed navbar if not already handled by body padding-top #}
-    <main role="main" class="container my-4 flex-grow-1" {% if not request.endpoint == 'slideshow' %}style="padding-top: 56px;"{% endif %}> {# Conditional padding, slideshow has its own body padding rule #}
+    {# Added id="main-content" for the skip link #}
+    <main id="main-content" role="main" class="container my-4 flex-grow-1" {% if not request.endpoint == 'slideshow' %}style="padding-top: 56px;"{% endif %}> {# Conditional padding, slideshow has its own body padding rule #}
         {% block content %}{% endblock %}
     </main>
 

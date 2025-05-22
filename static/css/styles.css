@@ -8,78 +8,82 @@
     --lightbox-text-muted-color: #6c757d;
     --lightbox-card-border-color: #dee2e6;
     --lightbox-card-header-bg: #f8f9fa;
-    --lightbox-body-bg: #f0f2f5;
+    --lightbox-body-bg: #f0f2f5; /* Light gray background for the body */
+    --lightbox-button-text-color: #ffffff;
+    --lightbox-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --lightbox-code-font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    --lightbox-border-radius: 0.375rem; /* Standardized border radius */
 }
 
 /* --- General Body & Typography --- */
 html {
-    height: 100%; 
+    height: 100%;
+    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--lightbox-font-family);
     background-color: var(--lightbox-body-bg);
     color: var(--lightbox-text-color);
-    padding-top: 70px; /* Assuming fixed navbar height */
-    display: flex; 
-    flex-direction: column; 
-    min-height: 100%; 
+    padding-top: 70px; /* Global padding for fixed navbar, adjusted by specific pages if needed */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Changed from 100% to ensure full viewport height */
     line-height: 1.6;
 }
 
-/* Apply body_class from base.html if present for page-specific scoping */
 body.collection-page-body {
-    /* Specific styles for collection page body if needed */
+    /* Specific overrides for collection page body if padding-top needs to differ */
 }
 body.slideshow-page-body {
-    background-color: #000 !important; 
-    color: #fff !important; 
-    padding-top: 0; 
-    height: 100vh; 
-    overflow: hidden;
+    background-color: #000 !important;
+    color: #fff !important;
+    padding-top: 0; /* Slideshow manages its own layout, no body padding needed */
+    height: 100vh; /* Ensure slideshow body takes full viewport height */
+    overflow: hidden; /* Prevent scrollbars on slideshow page */
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #343a40; /* Darker heading color */
-    font-weight: 500; 
+    color: #343a40;
+    font-weight: 500;
     margin-bottom: 0.75rem;
+    line-height: 1.2; /* Tighter line height for headings */
 }
 h1 { font-size: 2.25rem; }
 h2 { font-size: 1.8rem; }
 h3 { font-size: 1.5rem; }
 
-main.container.my-4 {
-    flex-grow: 1;
+main.container.my-4 { /* Main content container */
+    flex-grow: 1; /* Allow main content to fill available space */
 }
 
 a {
     color: var(--lightbox-primary-color);
-    text-decoration: none; 
+    text-decoration: none;
+    transition: color 0.15s ease-in-out;
 }
 a:hover {
     color: var(--lightbox-primary-hover-color);
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
-/* Accessibility: Clearer focus states for keyboard users */
+/* Accessibility: Clearer focus states */
 *:focus-visible {
     outline: 2px solid var(--lightbox-primary-color);
     outline-offset: 2px;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Similar to Bootstrap focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
-
 
 /* --- Navbar --- */
 .navbar {
-    min-height: 56px; 
-    /* border-bottom: 1px solid var(--lightbox-card-border-color); /* Handled by Bootstrap class */
+    min-height: 56px;
+    /* box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); /* Default Bootstrap shadow is fine */
 }
-
 .navbar-brand .lightbox-logo {
     display: inline-block;
     margin-right: 0.25rem;
-    font-size: 1.5em; 
-    vertical-align: middle; 
+    font-size: 1.5em;
+    vertical-align: middle;
     filter: drop-shadow(0 0 4px rgba(255, 223, 0, 0.8));
     transition: transform 0.2s ease-in-out;
 }
@@ -89,61 +93,69 @@ a:hover {
 
 /* --- Footer --- */
 .footer {
-    font-size: 0.875em; 
+    font-size: 0.875em;
     padding-top: 1rem;
     padding-bottom: 1rem;
-    /* background-color: var(--lightbox-card-header-bg); /* Handled by Bootstrap class */
+    /* background-color: var(--lightbox-card-header-bg); /* Bootstrap bg-light handles this */
 }
 .footer a.text-muted:hover {
-    color: var(--lightbox-primary-hover-color) !important; 
+    color: var(--lightbox-primary-hover-color) !important;
 }
 
 /* --- Cards --- */
 .card {
     border: 1px solid var(--lightbox-card-border-color);
-    border-radius: 0.375rem; 
+    border-radius: var(--lightbox-border-radius);
     transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem; /* Consistent bottom margin for cards */
 }
 .card:hover {
-    box-shadow: 0 .25rem .75rem rgba(0,0,0,.08)!important; 
-    transform: translateY(-3px); 
+    box-shadow: 0 0.4rem 1.2rem rgba(0,0,0,.09)!important; /* Softer, more spread shadow */
+    transform: translateY(-4px); /* Slightly more lift */
 }
-
 .card-header {
     background-color: var(--lightbox-card-header-bg);
-    border-bottom: 1px solid var(--lightbox-card-border-color); 
+    border-bottom: 1px solid var(--lightbox-card-border-color);
     font-weight: 500;
+    padding: 0.75rem 1.25rem; /* Standard Bootstrap padding */
 }
-.card-header.bg-primary {
+.card-header.bg-primary { /* Ensure primary bg on card header uses variable */
     background-color: var(--lightbox-primary-color) !important;
-    color: white;
+    color: var(--lightbox-button-text-color);
 }
-.card-title { 
+.card-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 0.5rem; 
+    margin-bottom: 0.5rem;
 }
 
 /* --- Buttons --- */
 .btn {
-    border-radius: 0.3rem; 
+    border-radius: 0.3rem;
     transition: all 0.15s ease-in-out;
     font-weight: 500;
+    padding: 0.475rem 0.85rem; /* Slightly adjusted padding for better feel */
 }
-.btn:active { /* General active state for buttons */
+.btn:active, .btn.active { /* General active state for buttons */
     transform: translateY(1px);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.125);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+}
+.btn-primary { /* Ensure consistency with variables */
+    background-color: var(--lightbox-primary-color);
+    border-color: var(--lightbox-primary-color);
+    color: var(--lightbox-button-text-color);
 }
 .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.1);
+    background-color: var(--lightbox-primary-hover-color);
+    border-color: var(--lightbox-primary-hover-color);
+    color: var(--lightbox-button-text-color);
+    transform: translateY(-1px); /* Subtle lift on hover */
+    box-shadow: 0 0.125rem 0.35rem rgba(0,0,0,.12);
 }
-
 .btn-outline-warning i.bi-star-fill,
 .btn-warning i.bi-star-fill {
-    color: #ffc107;
+    color: #ffc107; /* Keep Bootstrap's warning yellow for stars */
 }
 .btn-outline-warning:hover i.bi-star-fill,
 .btn-warning:hover i.bi-star-fill {
@@ -158,34 +170,33 @@ a:hover {
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
     border: 2px solid rgba(255,255,255,0.2);
-    cursor: pointer; /* Added for better affordance */
+    cursor: pointer;
 }
-.custom-play-btn.btn-danger {
+.custom-play-btn.btn-danger { /* Assuming this is for slideshow play buttons */
     border-color: rgba(255,255,255,0.3);
 }
 .custom-play-btn:hover {
-    transform: scale(1.1); 
+    transform: scale(1.1);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
 }
-.custom-play-btn:active { /* Specific active state for these prominent buttons */
-    transform: scale(0.96) !important; /* Override general .btn:active transform if needed */
+.custom-play-btn:active {
+    transform: scale(0.96) !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
 }
 .custom-play-btn i.bi-play-fill {
-    position: relative; 
-    left: 2px; 
+    position: relative;
+    left: 2px; /* Nudge for visual centering */
     font-size: 1.6em;
 }
-.batch-actions .custom-play-btn i.bi-play-fill {
-    font-size: 1.8em;
-    left: 2px; /* Keep consistent nudge */
+.batch-actions .custom-play-btn i.bi-play-fill { /* If used in .batch-actions */
+    font-size: 1.8em; /* Larger for prominence */
+    left: 2px;
 }
-
 .batch-card .btn-outline-secondary[title="View Gallery Details"] i {
     transition: color 0.2s ease, transform 0.2s ease;
 }
 .batch-card .btn-outline-secondary[title="View Gallery Details"]:hover i {
-    color: var(--lightbox-primary-color); 
+    color: var(--lightbox-primary-color);
     transform: scale(1.1);
 }
 
@@ -195,55 +206,54 @@ a:hover {
     border-radius: 0.3rem;
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
 }
+/* Using Bootstrap's default alert colors, border-left is good addition */
 .alert-success { border-left-color: #198754; }
 .alert-danger  { border-left-color: #dc3545; }
 .alert-warning { border-left-color: #ffc107; }
 .alert-info    { border-left-color: #0dcaf0; }
 
 /* --- Utility Classes --- */
-.text-muted-light { color: #888 !important; }
+.text-muted-light { color: #888 !important; } /* If Bootstrap's text-muted isn't light enough */
 
 /* --- About Section on Index Page & Code Blocks --- */
 .list-group-item strong {
-    color: var(--lightbox-primary-hover-color); /* Use variable */
+    color: var(--lightbox-primary-hover-color);
 }
-/* Standardize pre styling */
-pre, .about-section pre, #content pre { 
-    white-space: pre-wrap; 
-    word-break: break-word; /* Better than break-all for readability */
-    background-color: #282c34; 
-    color: #abb2bf; 
-    padding: 1em; /* Add some padding */
-    border-radius: 0.25rem;
-    border: 1px solid #3e4451;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; /* Monospace font stack */
-    font-size: 0.875em; /* Slightly smaller for code */
+pre, .about-section pre, #content pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    background-color: #282c34; /* Dark background for code blocks */
+    color: #abb2bf; /* Light text for code */
+    padding: 1em;
+    border-radius: var(--lightbox-border-radius);
+    border: 1px solid #3e4451; /* Subtle border for code blocks */
+    font-family: var(--lightbox-code-font-family);
+    font-size: 0.875em;
     line-height: 1.5;
-    overflow-x: auto; /* Allow horizontal scrolling for long lines */
+    overflow-x: auto; /* Allow horizontal scroll for long code lines */
 }
-
 
 /* =========================================== */
 /* === Styles for Collection Page Specific === */
 /* =========================================== */
 .collection-page-body .card-media-container {
-    height: 180px; 
+    height: 180px;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    background-color: #e9ecef; /* Slightly lighter than #e0e0e0 */
-    border-bottom: 1px solid var(--lightbox-card-border-color); 
-    position: relative; 
-    border-radius: 0.25rem 0.25rem 0 0;
+    background-color: #e9ecef; /* Light placeholder background */
+    border-bottom: 1px solid var(--lightbox-card-border-color);
+    position: relative;
+    border-radius: var(--lightbox-border-radius) var(--lightbox-border-radius) 0 0; /* Match card border radius */
 }
-.collection-page-body .media-thumbnail {
+.collection-page-body .media-thumbnail { /* Generic class for all media thumbs */
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
+    object-fit: contain; /* Default for images, ensures visibility */
     transition: transform 0.3s ease;
 }
-
+/* Icon-based thumbnails */
 .collection-page-body .video-thumbnail,
 .collection-page-body .audio-thumbnail,
 .collection-page-body .unknown-thumbnail,
@@ -256,130 +266,144 @@ pre, .about-section pre, #content pre {
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: var(--lightbox-text-muted-color); 
+    color: var(--lightbox-text-muted-color);
 }
 .collection-page-body .video-thumbnail i,
 .collection-page-body .audio-thumbnail i,
-.collection-page-body .unknown-thumbnail i { /* Corrected typo */
-    font-size: 3.5rem; /* Slightly reduced from 4rem */
-    opacity: 0.5; /* Slightly less opaque */
-    color: #495057;
+.collection-page-body .unknown-thumbnail i {
+    font-size: 3.5rem;
+    opacity: 0.5;
+    color: #495057; /* Darker gray for icons */
 }
 .collection-page-body .media-type-badge {
     position: absolute;
-    top: 8px; /* Adjusted for better spacing */
+    top: 8px;
     right: 8px;
-    font-size: 0.7em; /* Slightly smaller badge */
+    font-size: 0.7em;
     padding: 0.25em 0.45em;
     opacity: 0.9;
 }
 .collection-page-body .processing-thumbnail .spinner-border {
-    width: 2.25rem; 
+    width: 2.25rem;
     height: 2.25rem;
-    border-width: 0.18rem; /* Slightly thinner border */
+    border-width: 0.18rem;
 }
-.collection-page-body .processing-status-text { 
+.collection-page-body .processing-status-text {
     font-weight: 500;
-    color: var(--lightbox-primary-color); 
+    color: var(--lightbox-primary-color);
     margin-top: 0.25rem;
     font-size: 0.9em;
-    animation: pulseStatus 1.8s infinite ease-in-out; /* Moved animation here */
+    animation: pulseStatus 1.8s infinite ease-in-out;
 }
 @keyframes pulseStatus {
-  0%, 100% { opacity: 0.7; } /* Adjusted opacity for pulse */
+  0%, 100% { opacity: 0.7; }
   50% { opacity: 1; }
 }
 .collection-page-body .failed-thumbnail i {
-    font-size: 2.8rem; /* Slightly smaller */
+    font-size: 2.8rem; /* Icon size for failed state */
 }
-
 .collection-page-body .hidden-item .card {
-    opacity: 0.65; /* Slightly more opaque */
-    border: 1px dashed #999; /* Darker dashed border */
+    opacity: 0.65;
+    border: 1px dashed #999;
 }
 .collection-page-body .hidden-item .card:hover {
     opacity: 1;
     border-style: solid;
-    border-color: var(--lightbox-card-border-color); /* Use variable */
+    border-color: var(--lightbox-card-border-color);
 }
 .collection-page-body .liked-item .card {
-    border: 2px solid #ffc107; 
-    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); /* Slightly softer shadow */
+    border: 2px solid #ffc107; /* Bootstrap warning color for liked */
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 .collection-page-body .filter-btn {
-    font-weight: 500;
+    font-weight: 500; /* Make filter buttons slightly bolder */
 }
-
 
 /* =========================================== */
 /* === Styles for Slideshow Page Specific === */
 /* =========================================== */
-.slideshow-page-body .navbar {
-    background-color: rgba(15, 15, 15, 0.88) !important; /* Slightly adjusted transparency */
-    border-bottom: 1px solid #222; /* Darker border */
-    position: fixed; 
-    top: 0; left: 0; right: 0;
-    z-index: 1070;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Base transition */
-}
 
-.slideshow-page-body .navbar.navbar-hidden { 
+/* --- Slideshow Navbar & Return Link --- */
+.slideshow-page-body .navbar { /* Navbar specific to slideshow page */
+    background-color: rgba(15, 15, 15, 0.9) !important; /* Slightly more opaque */
+    border-bottom: 1px solid #2a2a2a; /* Darker, softer border */
+    position: fixed; /* Already in base.html, but ensure it's here for slideshow context */
+    top: 0; left: 0; right: 0;
+    z-index: 1070; /* High z-index, above slideshow content but below modals if any */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.slideshow-page-body .navbar.navbar-hidden {
     opacity: 0;
     transform: translateY(-100%);
-    pointer-events: none; /* CRITICAL for auto-hide */
+    pointer-events: none; /* Critical for auto-hide */
 }
-
-.slideshow-page-body #return-link.element-hidden-via-autohide {
-    opacity: 0;
-    transform: translateY(-100%); /* Slides up, like navbar */
-    pointer-events: none;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Match navbar hide */
-}
-
-
 .slideshow-page-body .navbar-light .navbar-brand,
-.slideshow-page-body .navbar-light .nav-link {
-    color: #eaeaea !important; 
+.slideshow-page-body .navbar-light .nav-link { /* Ensure text is light on dark navbar */
+    color: #eaeaea !important;
 }
 .slideshow-page-body .navbar-light .nav-link:hover {
     color: #ffffff !important;
 }
-.slideshow-page-body .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28230, 230, 230, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); /* Slightly adjusted color */
+.slideshow-page-body .navbar-toggler-icon { /* Custom toggler icon for dark navbar */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28230, 230, 230, 0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
-.slideshow-page-body .footer { display: none !important; } /* Ensure it's hidden */
+#return-link { /* Return to Gallery link */
+    position: fixed;
+    top: 12px; left: 12px;
+    z-index: 1075; /* Above navbar */
+    color: #ddd;
+    background-color: rgba(30, 30, 30, 0.75);
+    padding: 0.5rem 1rem;
+    border-radius: var(--lightbox-border-radius);
+    font-size: 0.85em;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, background-color 0.2s ease, color 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+#return-link:hover {
+    background-color: rgba(50, 50, 50, 0.9);
+    color: white;
+    transform: translateY(-1px); /* Subtle lift */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+#return-link.element-hidden-via-autohide { /* Hiding for return link */
+    opacity: 0;
+    transform: translateY(-150%); /* Slides up further */
+    pointer-events: none;
+}
 
+/* --- Slideshow Main Container & Media --- */
 .slideshow-container {
-    width: 100%;
-    height: 100%; /* Changed from 100vh to 100% to work with body's 100vh */
+    width: 100%; height: 100%; /* Takes full space of slideshow-page-body */
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #000; 
-    position: relative; 
+    background-color: #000; /* Base background if media doesn't fill */
+    position: relative; /* For spinner positioning */
 }
-.slideshow-media {
+.slideshow-media { /* Common styles for img, video, audio in slideshow */
     max-width: 100%;
     max-height: 100%;
-    display: none; /* JS will manage this */
-    object-fit: contain;
-    /* --- ADDED/MODIFIED FOR TRANSITIONS --- */
-    opacity: 0; 
+    display: none; /* JS controls visibility */
+    object-fit: contain; /* Ensures entire media is visible, maintains aspect ratio */
+    opacity: 0;
     transition: opacity 0.3s ease-in-out; /* Matches MEDIA_TRANSITION_DURATION in JS */
 }
-.slideshow-media.media-active {
-    opacity: 1; 
+.slideshow-media.media-active { /* Class added by JS to show current media */
+    display: block; /* Or flex, depending on media type if specific centering needed */
+    opacity: 1;
+}
+#slideshow-audio.media-active { /* If audio element itself needs to be visible (e.g. with native controls) */
+    display: block; /* Or 'flex' or 'inline-block' if you want it to take space */
+    /* Example styling if you show the audio element: */
+    /* padding: 20px; background-color: rgba(20,20,20,0.5); border-radius: 5px; width: auto; max-width: 80%; */
+}
+.loading-spinner { /* Spinner for media loading */
+    /* Position is set by JS/HTML style attribute, ensure z-index if needed */
+    z-index: 10; /* Above media but below controls */
 }
 
-/* Style for #slideshow-audio if it's displayed with its own controls */
-#slideshow-audio.media-active { /* If it's made display: block or flex by JS */
-    padding: 20px;
-    background-color: rgba(20,20,20,0.5); /* Example background if shown */
-    border-radius: 5px;
-    width: auto; /* Let browser size it based on controls attribute */
-    max-width: 80%;
-}
-
+/* --- Slideshow Controls --- */
+.slideshow-page-body .footer { display: none !important; } /* Hide global footer on slideshow */
 
 .controls-container {
     position: fixed;
@@ -387,299 +411,239 @@ pre, .about-section pre, #content pre {
     background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 60%, rgba(0,0,0,0) 100%);
     padding: 15px 20px 20px 20px;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    z-index: 1060; 
-    min-height: 75px; 
+    z-index: 1060; /* Below navbar/return-link, above content */
+    min-height: 75px;
     box-sizing: border-box;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Base transition */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
-.slideshow-page-body .controls-container.controls-hidden { 
+.slideshow-page-body .controls-container.controls-hidden {
     opacity: 0;
     transform: translateY(100%);
-    pointer-events: none; /* CRITICAL for auto-hide */
+    pointer-events: none; /* Critical for auto-hide */
+}
+.slideshow-controls { /* Central group of playback controls */
+    display: flex;
+    gap: 12px; /* Slightly adjusted gap */
+    align-items: center;
+    flex-grow: 1;
+    justify-content: center;
+}
+.btn-control { /* Styling for individual control buttons */
+    width: 42px; height: 42px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f0f0f0; /* Light icon color */
+    font-size: 1.1rem; /* Icon size */
+    border-radius: 50%; /* Make control buttons circular */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s ease-in-out; /* Smooth transition for all properties */
+}
+.btn-control:hover, .btn-control:focus-visible { /* Use focus-visible for keyboard */
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.45);
+    transform: scale(1.05); /* Slight scale on hover/focus */
+}
+.btn-control:active {
+    background-color: rgba(255,255,255,0.15);
+    transform: scale(0.98); /* Press down effect */
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+}
+.btn-play-pause { /* Larger play/pause button */
+    width: 56px; height: 56px; font-size: 1.7rem;
+}
+.download-container, .fullscreen-container { /* Containers for side buttons */
+    width: 46px; /* To align with flex layout, can be adjusted */
+    display: flex;
+    justify-content: center;
 }
 
-.slideshow-controls {
-    display: flex;
-    gap: 15px; /* Slightly reduced gap */
-    align-items: center;
-    flex-grow: 1; 
-    justify-content: center; 
-}
+/* Progress Bar and Time Display */
 .progress-bar-group {
-    display: flex; 
+    display: flex;
     align-items: center;
-    flex-grow: 1; 
-    margin: 0 15px; /* Slightly reduced margin */
-    min-width: 120px; 
-    max-width: 450px; 
+    flex-grow: 1;
+    margin: 0 12px; /* Adjusted margin */
+    min-width: 120px;
+    max-width: 450px;
 }
-/* More accessible range input styling */
 #media-progress-bar, .media-progress-bar-input,
 #volume-control, .volume-control-input {
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent; /* Remove default background */
+    -webkit-appearance: none; appearance: none; /* Reset appearance */
+    background: transparent; /* Necessary for custom track styling */
     cursor: pointer;
+    flex-grow: 1; /* Allow progress bar to take available space */
+    height: 16px; /* Increased clickable area for the track */
 }
-/* Track */
+/* Track Styling */
 #media-progress-bar::-webkit-slider-runnable-track,
 .media-progress-bar-input::-webkit-slider-runnable-track,
 #volume-control::-webkit-slider-runnable-track,
 .volume-control-input::-webkit-slider-runnable-track {
     background: rgba(255, 255, 255, 0.3);
-    height: 8px; /* Consistent height */
-    border-radius: 4px;
+    height: 6px; /* Actual visual height of track */
+    border-radius: 3px;
+    transition: background-color 0.15s ease;
 }
 #media-progress-bar::-moz-range-track,
 .media-progress-bar-input::-moz-range-track,
 #volume-control::-moz-range-track,
 .volume-control-input::-moz-range-track {
     background: rgba(255, 255, 255, 0.3);
-    height: 8px;
-    border-radius: 4px;
+    height: 6px;
+    border-radius: 3px;
+    transition: background-color 0.15s ease;
 }
-/* Thumb */
+#media-progress-bar:hover::-webkit-slider-runnable-track, /* Brighter track on hover */
+.media-progress-bar-input:hover::-webkit-slider-runnable-track,
+#volume-control:hover::-webkit-slider-runnable-track,
+.volume-control-input:hover::-webkit-slider-runnable-track {
+    background: rgba(255, 255, 255, 0.5);
+}
+#media-progress-bar:hover::-moz-range-track,
+.media-progress-bar-input:hover::-moz-range-track,
+#volume-control:hover::-moz-range-track,
+.volume-control-input:hover::-moz-range-track {
+    background: rgba(255, 255, 255, 0.5);
+}
+/* Thumb Styling */
 #media-progress-bar::-webkit-slider-thumb,
 .media-progress-bar-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    margin-top: -4px; /* (track-height - thumb-height) / 2 assuming thumb is 16px */
+    -webkit-appearance: none; appearance: none;
+    margin-top: -5px; /* (track_visual_height - thumb_height) / 2 + (track_clickable_height - track_visual_height)/2 ...ish */
+    /* (6px track - 16px thumb)/2 = -5px */
     background-color: #f0f0f0;
     border: 1px solid #bbb;
-    height: 16px;
-    width: 16px;
+    height: 16px; width: 16px;
     border-radius: 50%;
+    transition: transform 0.15s ease;
 }
 #media-progress-bar::-moz-range-thumb,
 .media-progress-bar-input::-moz-range-thumb {
     background-color: #f0f0f0;
     border: 1px solid #bbb;
-    height: 14px; /* Firefox thumb often appears smaller */
-    width: 14px;
+    height: 14px; width: 14px; /* Firefox thumb often renders smaller */
     border-radius: 50%;
     box-sizing: border-box;
+    transition: transform 0.15s ease;
 }
+#media-progress-bar:active::-webkit-slider-thumb, /* Thumb larger on drag */
+.media-progress-bar-input:active::-webkit-slider-thumb { transform: scale(1.2); }
+#media-progress-bar:active::-moz-range-thumb,
+.media-progress-bar-input:active::-moz-range-thumb { transform: scale(1.2); }
+
+#volume-control, .volume-control-input { width: 70px; flex-grow: 0; } /* Fixed width for volume */
 #volume-control::-webkit-slider-thumb,
 .volume-control-input::-webkit-slider-thumb {
-     -webkit-appearance: none;
-    appearance: none;
-    margin-top: -4px;
+    -webkit-appearance: none; appearance: none;
+    margin-top: -5px; /* Consistent with progress bar */
     background-color: #f0f0f0;
     border: 1px solid #bbb;
-    height: 16px;
-    width: 12px; /* Make volume thumb slightly narrower */
+    height: 16px; width: 10px; /* Narrower thumb for volume */
     border-radius: 3px;
+    transition: transform 0.15s ease;
 }
 #volume-control::-moz-range-thumb,
 .volume-control-input::-moz-range-thumb {
     background-color: #f0f0f0;
     border: 1px solid #bbb;
-    height: 14px;
-    width: 10px;
+    height: 14px; width: 8px;
     border-radius: 3px;
     box-sizing: border-box;
+    transition: transform 0.15s ease;
 }
+#volume-control:active::-webkit-slider-thumb,
+.volume-control-input:active::-webkit-slider-thumb { transform: scale(1.1); }
+#volume-control:active::-moz-range-thumb,
+.volume-control-input:active::-moz-range-thumb { transform: scale(1.1); }
 
-#time-display, .time-display { 
-    color: #e0e0e0; font-size: 0.875em; /* Slightly smaller */
-    min-width: 90px; /* Adjusted min-width */
-    text-align: center; /* Center text if it wraps */
+#time-display, .time-display {
+    color: #e0e0e0;
+    font-size: 0.875em;
+    min-width: 90px; /* Ensure enough space for HH:MM:SS / HH:MM:SS */
+    text-align: center;
+    margin-left: 8px; /* Space between progress bar and time */
 }
-.volume-container { display: flex; align-items: center; gap: 8px; } /* Reduced gap */
-#volume-control, .volume-control-input { 
-    width: 70px; /* Adjusted */
-}
-
-.btn-control {
-    width: 42px; height: 42px; /* Slightly smaller */
-    background-color: rgba(255, 255, 255, 0.08); 
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #f0f0f0; /* Ensure icon color is light */
-    font-size: 1.1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.35);
-    display: inline-flex; /* For better icon centering */
-    align-items: center;
-    justify-content: center;
-    padding: 0; /* Remove padding if using flex for centering */
-}
-.btn-control:hover, .btn-control:focus {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: #fff;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.45);
-    transform: translateY(-1px);
-}
-.btn-control:active { /* Specific active for these controls */
-    background-color: rgba(255,255,255,0.15);
-    transform: translateY(0px);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
-}
-
-.btn-play-pause {
-    width: 56px; height: 56px; font-size: 1.7rem;
-}
+.volume-container { display: flex; align-items: center; gap: 8px; }
 #counter { color: #d0d0d0; margin: 0 10px; font-size: 0.9em; }
 
-#return-link {
-    position: fixed; 
-    top: 12px; 
-    left: 12px;
-    z-index: 1075; 
-    color: #ddd;
-    background-color: rgba(30, 30, 30, 0.7);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.85em;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-}
-#return-link:hover {
-    background-color: rgba(50, 50, 50, 0.85);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
+/* =========================================== */
+/* === Fullscreen Slideshow Specific Styles === */
+/* =========================================== */
+/*
+    Consolidated Fullscreen Logic:
+    - `.is-truly-fullscreen` is added by JS when app initiates fullscreen on slideshow-container.
+    - `:fullscreen` (and vendor prefixes) are native browser states.
+    - We aim for consistent visual styling for media in both scenarios.
+*/
 
-/* --- Fullscreen Specific Adjustments --- */
-.slideshow-page-body .slideshow-container:fullscreen {
-    width: 100vw !important;  height: 100vh !important; margin: 0 !important; padding: 0 !important;
-    border: none !important; box-sizing: border-box !important; background-color: #000 !important;
-    /* margin-top: 0 !important; /* Already covered by margin: 0 */
-}
-.slideshow-page-body .slideshow-container:fullscreen .slideshow-media {
-    box-shadow: none !important; 
-}
-
-.slideshow-page-body:fullscreen .slideshow-container { /* If body is made fullscreen */
-    width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important;
-    border: none !important; box-sizing: border-box !important; background-color: #000 !important;
-}
-
-/* JS primarily handles hiding navbar/return-link via classes/direct style.
-   These CSS rules are fallbacks or can be removed if JS is fully reliable. */
-.slideshow-page-body .slideshow-container:fullscreen ~ .navbar,
-.slideshow-page-body .slideshow-container:fullscreen ~ #return-link {
-     /* display: none !important; */ /* Prefer JS control for this */
-}
-/* === NEW Styles for Enhanced Fullscreen Slideshow === */
-
-/* Main container when app-controlled fullscreen is active via JS */
-.slideshow-container.is-truly-fullscreen {
-    position: fixed !important; /* Override any relative positioning */
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;  /* Viewport width */
-    height: 100vh !important; /* Viewport height */
-    margin: 0 !important;
-    padding: 0 !important;
-    background-color: #000 !important; /* Force black */
-    z-index: 2147483000 !important; /* High z-index, but below controls */
-    border: none !important;
-    box-sizing: border-box !important;
-    display: flex !important; /* Keep your centering */
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-/* Styling for the media element when its container is in our app-controlled fullscreen */
-.slideshow-container.is-truly-fullscreen .slideshow-media {
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-    box-shadow: none !important;
-}
-
-/* Browser's native :fullscreen pseudo-class for the container */
-/* These ensure that if the browser API itself styles the element, it's consistent */
-.slideshow-container:fullscreen,
-.slideshow-container:-webkit-full-screen,
-.slideshow-container:-moz-full-screen, /* Just in case, though JS mostly handles vendor prefixes */
-.slideshow-container:-ms-fullscreen {
-    background-color: #000 !important; /* Ensure black background in native FS */
-    /* Width, height, top, left are usually handled by the browser's :fullscreen */
-}
-
-.slideshow-container:fullscreen .slideshow-media,
-.slideshow-container:-webkit-full-screen .slideshow-media,
-.slideshow-container:-moz-full-screen .slideshow-media,
-.slideshow-container:-ms-fullscreen .slideshow-media {
-    box-shadow: none !important;
-}
-
-/* Navbar when it needs to be definitively hidden in fullscreen */
-/* Your existing .slideshow-page-body .navbar.navbar-hidden with opacity/transform is for SMOOTH auto-hide */
-/* This .navbar-hidden-true is for INSTANT hide/override if needed by JS during FS state changes */
-.slideshow-page-body .navbar.navbar-hidden-true {
-    display: none !important;
-}
-
-/* Return link when it needs to be definitively hidden in fullscreen */
-.slideshow-page-body #return-link.element-hidden-in-fullscreen {
-    display: none !important;
-}
-
-/* Controls container when it needs to be definitively hidden (e.g., if NATIVE media player goes fullscreen) */
-.slideshow-page-body .controls-container.controls-truly-hidden {
-    display: none !important; 
-}
-
-/* Ensure controls are above the fullscreen slideshow content */
-.slideshow-page-body .controls-container {
-    z-index: 2147483500; /* Higher than slideshow-container */
-}
-.slideshow-page-body .navbar { /* If not hidden */
-    z-index: 2147483500; /* Higher than slideshow-container */
-}
-.slideshow-page-body #return-link { /* If not hidden */
-    z-index: 2147483500; /* Higher than slideshow-container */
-}
-/* --- Fullscreen Slideshow Styling --- */
-
-/* Fullscreen specific styling for the CONTAINER */
+/* Styles for the #slideshow-container when in ANY fullscreen mode */
+#slideshow-container.is-truly-fullscreen,
 #slideshow-container:-webkit-full-screen,
 #slideshow-container:-moz-full-screen,
 #slideshow-container:-ms-fullscreen,
-#slideshow-container:fullscreen,
-#slideshow-container.is-truly-fullscreen { /* Your custom class from CHUNK 1 in JS */
-    display: flex; /* Crucial for centering the child image/video */
-    justify-content: center;
-    align-items: center;
-    background-color: #000; /* Or your desired fullscreen background */
-    width: 100vw !important;  /* Use !important to override other width/height if necessary */
+#slideshow-container:fullscreen {
+    /* These are often implicitly set by browser fullscreen, but good to be explicit */
+    width: 100vw !important;
     height: 100vh !important;
-    padding: 0; /* Remove any padding that might constrain children */
-    margin: 0;  /* Remove any margin */
-    overflow: hidden; /* Prevent any unexpected scrollbars */
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #000 !important; /* Force black background */
+    border: none !important;
+    box-sizing: border-box !important;
+    /* Flex properties for centering media are inherited from non-fullscreen .slideshow-container */
+    /* display: flex !important; justify-content: center !important; align-items: center !important; */
 }
 
-/* Fullscreen specific styling for the IMAGE inside the fullscreen container */
-#slideshow-container:-webkit-full-screen #slideshow-image,
-#slideshow-container:-moz-full-screen #slideshow-image,
-#slideshow-container:-ms-fullscreen #slideshow-image,
-#slideshow-container:fullscreen #slideshow-image,
-#slideshow-container.is-truly-fullscreen #slideshow-image {
-    width: 100%;            /* Make image try to fill container width */
-    height: 100%;           /* Make image try to fill container height */
-    object-fit: contain;    /* Key: Scales image down/up to fit, maintains aspect ratio */
-                             /* Alternative: object-fit: cover; (fills screen, may crop image) */
-    max-width: 100%;        /* Ensures it doesn't try to be wider than container */
-    max-height: 100%;       /* Ensures it doesn't try to be taller than container */
-    display: block;         /* Good practice for images with object-fit */
-    margin: auto;           /* Helps center if 'contain' makes image smaller than container */
+/* Specifics for app-controlled fullscreen using .is-truly-fullscreen */
+#slideshow-container.is-truly-fullscreen {
+    position: fixed !important; /* Critical to overlay all other page content */
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 2147483000 !important; /* High z-index, below UI overlays */
 }
 
-/* Ensure videos also behave well in your app's fullscreen mode */
-/* (You might already have good video scaling, but this ensures consistency) */
-#slideshow-container:-webkit-full-screen #slideshow-video,
-#slideshow-container:-moz-full-screen #slideshow-video,
-#slideshow-container:-ms-fullscreen #slideshow-video,
-#slideshow-container:fullscreen #slideshow-video,
-#slideshow-container.is-truly-fullscreen #slideshow-video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Or 'cover' if you prefer */
-    max-width: 100%;
-    max-height: 100%;
+/* Styles for .slideshow-media (img, video) when its PARENT container is in ANY fullscreen mode */
+#slideshow-container.is-truly-fullscreen .slideshow-media,
+#slideshow-container:-webkit-full-screen .slideshow-media,
+#slideshow-container:-moz-full-screen .slideshow-media,
+#slideshow-container:-ms-fullscreen .slideshow-media,
+#slideshow-container:fullscreen .slideshow-media {
+    /* Media should already be object-fit: contain from its base .slideshow-media rule */
+    /* No specific size changes needed if container is already 100vw/vh and media is contain */
+    box-shadow: none !important; /* Remove any lingering shadows from non-fullscreen state */
+}
+
+/* --- Hiding UI Elements in Fullscreen --- */
+/* JS primarily handles hiding navbar/return-link via classes like .navbar-hidden. */
+/* These are for more definitive hiding if needed, especially for app-controlled fullscreen */
+
+.slideshow-page-body .navbar.navbar-hidden-true { /* Added by JS for instant hide in FS */
+    display: none !important;
+}
+.slideshow-page-body #return-link.element-hidden-in-fullscreen { /* Added by JS for instant hide in FS */
+    display: none !important;
+}
+
+/* Controls container when it needs to be definitively hidden (e.g., if NATIVE media player controls take over) */
+.slideshow-page-body .controls-container.controls-truly-hidden {
+    display: none !important;
+}
+
+/* Ensure UI overlays (navbar, controls, return link) are above the fullscreen content */
+.slideshow-page-body .navbar { /* If not hidden */
+    z-index: 2147483500; /* Higher than .is-truly-fullscreen */
+}
+.slideshow-page-body #return-link { /* If not hidden */
+    z-index: 2147483505; /* Slightly higher than navbar if they could overlap */
+}
+.slideshow-page-body .controls-container { /* If not hidden */
+    z-index: 2147483500; /* Same level as navbar, typically at bottom */
 }

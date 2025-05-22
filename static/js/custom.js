@@ -22,11 +22,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileUploadInput = document.querySelector('input[type="file"][name="files[]"]');
     if (fileUploadInput) {
         fileUploadInput.addEventListener('change', function() {
-            const feedback = this.closest('.card-body')?.querySelector('.form-text');
+            const feedback = this.closest('.card-body')?.querySelector('.form-text.upload-feedback, .form-text'); // Adjusted selector for index/upload pages
             if (this.files && this.files.length > 0 && feedback) {
                 feedback.textContent = `${this.files.length} file(s) selected.`;
             } else if (feedback) {
-                feedback.textContent = 'Allowed file types: Images, Videos, Audio, PDF';
+                // Restore default text (assuming it's simple, or store/retrieve from data-attribute if complex)
+                const defaultUploadText = "Allowed: Images, Videos, Audio, PDF. MKVs are converted."; // Example, make dynamic if needed
+                const defaultCollectionText = "Allowed file types: Images, Videos, Audio, PDF";
+                if (feedback.classList.contains('upload-feedback')) { // For index.html
+                     feedback.textContent = defaultUploadText;
+                } else { // For collection.html (original logic)
+                     feedback.textContent = defaultCollectionText;
+                }
             }
         });
     }
@@ -75,15 +82,20 @@ function initSlideshow() {
     let currentIndex = 0;
     let imageTimer = null;
     const DEFAULT_IMAGE_DURATION = 15000;
-    let isPlayingStateForImages = true; 
+    // RENAMED: isPlayingStateForImages -> isSlideshowPlayingIntent for clarity
+    let isSlideshowPlayingIntent = true; // User's general intent for the slideshow to be playing
     let currentMediaElementForSeek = null;
     let isDraggingProgressBar = false;
     let hasUserInteractedForSound = false;
     let controlsHideTimer = null;
-    let isAppInitiatedFullscreen = false; 
+    let isAppInitiatedFullscreen = false;
     const CONTROLS_HIDE_DELAY = 3000;
     const MEDIA_TRANSITION_DURATION = 300;
-    let transitioningAway = false; 
+    let transitioningAway = false;
+
+    // ADDED FOR ATTEMPT #3: For handling unexpected media pauses
+    let unexpectedPauseTimer = null;
+    const UNEXPECTED_PAUSE_GRACE_PERIOD = 150; // milliseconds
 
     if (!mediaItems || mediaItems.length === 0) {
         console.warn('initSlideshow: No media items. Aborting.');
@@ -95,6 +107,15 @@ function initSlideshow() {
 
     const showLoadingSpinner = () => { if (loadingSpinner) loadingSpinner.style.display = 'block'; };
     const hideLoadingSpinner = () => { if (loadingSpinner) loadingSpinner.style.display = 'none'; };
+
+    // ADDED FOR ATTEMPT #3: Helper to clear the unexpected pause assessment
+    function clearUnexpectedPauseAssessment() {
+        if (unexpectedPauseTimer) {
+            clearTimeout(unexpectedPauseTimer);
+            unexpectedPauseTimer = null; // Crucial: Clear the timer ID reference
+            console.debug("clearUnexpectedPauseAssessment: Cleared pending unexpectedPauseTimer.");
+        }
+    }
 
     function updateVolumeIcon() {
         if (!volumeControl || !volumeIcon) return;
@@ -114,47 +135,82 @@ function initSlideshow() {
         if (!isNaN(media.duration) && media.duration > 0 && !isDraggingProgressBar) {
             mediaProgressBar.max = media.duration;
             mediaProgressBar.value = isNaN(media.currentTime) ? 0 : media.currentTime;
-        } else if (!isDraggingProgressBar) { 
-            mediaProgressBar.max = 100; mediaProgressBar.value = 0;
+        } else if (!isDraggingProgressBar) {
+            mediaProgressBar.max = 100;
+            mediaProgressBar.value = 0;
         }
         timeDisplay.textContent = `${formatTime(media.currentTime)} / ${formatTime(media.duration)}`;
     }
 
     function setupMediaElementSpecificListeners(mediaElement) {
         if (!mediaElement) return;
-        clearMediaElementSpecificListeners(mediaElement); 
+        clearMediaElementSpecificListeners(mediaElement);
 
         mediaElement.onloadedmetadata = () => {
             console.debug("onloadedmetadata:", mediaElement.id, "Duration:", mediaElement.duration);
             hideLoadingSpinner();
             updateMediaTimelineUI();
-            updatePlayPauseVisuals(); 
+            updatePlayPauseVisuals();
             updateVolumeIcon();
-            if ((isPlayingStateForImages || !mediaElement.paused) && !mediaElement.classList.contains('media-active')) {
+            // Check isSlideshowPlayingIntent for A/V media
+            if ((isSlideshowPlayingIntent || !mediaElement.paused) && !mediaElement.classList.contains('media-active')) {
                 mediaElement.classList.add('media-active');
             }
         };
         mediaElement.ontimeupdate = () => { if (!isDraggingProgressBar) updateMediaTimelineUI(); };
 
+        // MODIFIED FOR ATTEMPT #3: `onplay` handler
         mediaElement.onplay = () => {
-            console.debug(`onplay: ${mediaElement.id}. Setting isPlayingStateForImages = true.`);
-            isPlayingStateForImages = true; 
+            clearUnexpectedPauseAssessment(); // Clear any pending pause assessment
+            console.debug(`onplay: ${mediaElement.id}. Setting isSlideshowPlayingIntent = true.`);
+            isSlideshowPlayingIntent = true; // Reflect that media is actively playing
             updatePlayPauseVisuals();
             updateMediaTimelineUI();
             resetControlsHideTimer();
         };
+
+        // MODIFIED FOR ATTEMPT #3: `onpause` handler
         mediaElement.onpause = () => {
-            console.debug(`onpause: ${mediaElement.id}. TransitioningAway: ${transitioningAway}`);
-            if (!transitioningAway) { 
-                console.debug("onpause: Not transitioning away. Setting isPlayingStateForImages = false.");
-                isPlayingStateForImages = false; 
-            } else {
-                console.debug("onpause: Is transitioning away. isPlayingStateForImages remains:", isPlayingStateForImages);
+            console.debug(`onpause: ${mediaElement.id}. TransitioningAway: ${transitioningAway}. Current isSlideshowPlayingIntent: ${isSlideshowPlayingIntent}`);
+            // DO NOT clearUnexpectedPauseAssessment() here, as this might be the event that STARTS it.
+
+            if (!transitioningAway) { // Pause not due to transitioning to another slide
+                if (isSlideshowPlayingIntent) { // If we thought we should be playing
+                    console.debug(`onpause: Unexpected pause for ${mediaElement.id}. Starting grace period timer.`);
+                    // Clear any *previous* timer before setting a new one for THIS pause event
+                    clearUnexpectedPauseAssessment(); // Ensure only one assessment timer runs
+                    unexpectedPauseTimer = setTimeout(() => {
+                        // Check if this timer is still relevant (i.e., not cleared by an explicit play or transition)
+                        if (unexpectedPauseTimer === null) { // Timer was cleared externally
+                            console.debug(`onpause (timeout): Grace period timer for ${mediaElement.id} was cleared. No action.`);
+                            return;
+                        }
+                        unexpectedPauseTimer = null; // Clear reference as we are now executing this timer's callback
+
+                        // Re-check conditions *inside* the timeout callback
+                        if (mediaElement.paused && currentMediaElementForSeek === mediaElement && isSlideshowPlayingIntent) {
+                            console.debug(`onpause (timeout): Grace period ended for ${mediaElement.id}. Media still paused. Setting isSlideshowPlayingIntent to false.`);
+                            isSlideshowPlayingIntent = false;
+                            updatePlayPauseVisuals(); // Update visuals as state has changed
+                        } else {
+                            console.debug(`onpause (timeout): Grace period ended for ${mediaElement.id}, but conditions for state change not met (media playing, different element, or intent already false).`);
+                        }
+                    }, UNEXPECTED_PAUSE_GRACE_PERIOD);
+                } else { // isSlideshowPlayingIntent was already false
+                    console.debug("onpause: Media paused. isSlideshowPlayingIntent was already false (likely user-initiated pause).");
+                }
+            } else { // Pause IS due to transitioningAway
+                console.debug("onpause: Media paused as part of transitioning away. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
+                // If we are transitioning, any "unexpected pause" concern for the *outgoing* media is moot.
+                clearUnexpectedPauseAssessment();
             }
-            updatePlayPauseVisuals(); 
+
+            // Update visuals immediately based on current media element's actual paused state
+            updatePlayPauseVisuals();
             updateMediaTimelineUI();
             resetControlsHideTimer();
         };
+
         mediaElement.onended = () => {
             console.debug("onended:", mediaElement.id);
             onMediaEnded(mediaElement);
@@ -176,20 +232,28 @@ function initSlideshow() {
             if (mediaElement === videoEl) videoEl.style.display = 'none';
             if (mediaElement === audioEl) audioEl.style.display = 'none';
             currentMediaElementForSeek = null;
-            if(progressBarGroup) progressBarGroup.style.display = 'none';
-            if (isPlayingStateForImages) imageTimer = setTimeout(nextMedia, DEFAULT_IMAGE_DURATION / 2); 
+            if (progressBarGroup) progressBarGroup.style.display = 'none';
+            if (isSlideshowPlayingIntent) imageTimer = setTimeout(nextMedia, DEFAULT_IMAGE_DURATION / 2);
         };
     }
 
     function clearMediaElementSpecificListeners(mediaElement) {
         if (!mediaElement) return;
-        mediaElement.onloadedmetadata = null; mediaElement.ontimeupdate = null;
-        mediaElement.onplay = null; mediaElement.onpause = null; mediaElement.onended = null;
-        mediaElement.oncanplay = null; mediaElement.onerror = null; mediaElement.onload = null;
+        mediaElement.onloadedmetadata = null;
+        mediaElement.ontimeupdate = null;
+        mediaElement.onplay = null;
+        mediaElement.onpause = null;
+        mediaElement.onended = null;
+        mediaElement.oncanplay = null;
+        mediaElement.onerror = null;
+        mediaElement.onload = null; // Also clear onload if it was used for images
     }
 
-    function resetAndHideAllMediaElements() {
-        console.debug("resetAndHideAllMediaElements: Hiding media elements. Current media:", currentMediaElementForSeek ? currentMediaElementForSeek.id : "none");
+    // MODIFIED FOR ATTEMPT #3: Call clearUnexpectedPauseAssessment
+    async function resetAndHideAllMediaElements() {
+        console.debug("resetAndHideAllMediaElements: Hiding media elements. Clearing unexpected pause assessment.");
+        clearUnexpectedPauseAssessment(); // Clear it here as we are initiating a change
+
         [imageEl, videoEl, audioEl].forEach(el => el.classList.remove('media-active'));
 
         return new Promise(resolve => {
@@ -217,7 +281,7 @@ function initSlideshow() {
 
             if (oldMediaElement && (oldMediaElement === videoEl || oldMediaElement === audioEl)) {
                 console.debug("resetAndHideAllMediaElements: Preparing to pause old A/V media:", oldMediaElement.id);
-                transitioningAway = true; 
+                transitioningAway = true;
                 oldMediaElement.pause();
                 console.debug("resetAndHideAllMediaElements: Pause called on", oldMediaElement.id, "transitioningAway is", transitioningAway);
             }
@@ -229,103 +293,131 @@ function initSlideshow() {
         if (index < 0 || index >= mediaItems.length) {
             index = (index < 0 && mediaItems.length > 0) ? mediaItems.length - 1 : 0;
             if (mediaItems.length === 0) {
-                console.error("loadMedia: mediaItems empty."); await resetAndHideAllMediaElements();
+                console.error("loadMedia: mediaItems empty.");
+                await resetAndHideAllMediaElements();
                 if (slideshowContainer) slideshowContainer.innerHTML = '<p style="color: white; text-align: center; width:100%;">No media items.</p>';
-                hideLoadingSpinner(); return;
+                hideLoadingSpinner();
+                return;
             }
         }
-        currentIndex = index; const item = mediaItems[currentIndex];
+        currentIndex = index;
+        const item = mediaItems[currentIndex];
         console.log(`loadMedia: Item ${currentIndex + 1}/${mediaItems.length}`, JSON.stringify(item).substring(0, 200) + "...");
-        clearTimeout(imageTimer); 
-        console.debug("loadMedia: Cleared imageTimer (if any)."); // Log timer clearing
+        clearTimeout(imageTimer);
+        console.debug("loadMedia: Cleared imageTimer (if any).");
         showLoadingSpinner();
 
-        await resetAndHideAllMediaElements(); 
+        await resetAndHideAllMediaElements(); // This now also calls clearUnexpectedPauseAssessment
 
         console.debug("loadMedia: Resetting transitioningAway to false after old media handled.");
-        transitioningAway = false; 
+        transitioningAway = false;
 
         if (!item || !item.filepath) {
             console.error(`loadMedia: Item ${currentIndex} invalid.`, item);
-            imageEl.onload = null; imageEl.onerror = null; 
-            imageEl.src = brokenImagePath; imageEl.alt = "Error: Invalid data"; imageEl.style.display = 'block';
-            imageEl.classList.add('media-active'); hideLoadingSpinner();
+            imageEl.onload = null;
+            imageEl.onerror = null;
+            imageEl.src = brokenImagePath;
+            imageEl.alt = "Error: Invalid data";
+            imageEl.style.display = 'block';
+            imageEl.classList.add('media-active');
+            hideLoadingSpinner();
             if (counterEl) counterEl.textContent = `${currentIndex + 1}/${mediaItems.length}`;
-            
-            // For broken/invalid items, check isPlayingStateForImages before setting timer
-            if (isPlayingStateForImages) {
+
+            if (isSlideshowPlayingIntent) {
                 imageTimer = setTimeout(nextMedia, DEFAULT_IMAGE_DURATION / 2);
-                console.debug("loadMedia (broken item): Started imageTimer for " + (DEFAULT_IMAGE_DURATION / 2) + "ms. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("loadMedia (broken item): Started imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             } else {
-                console.debug("loadMedia (broken item): Not starting imageTimer. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("loadMedia (broken item): Not starting imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             }
-            updatePlayPauseVisuals(); return;
+            updatePlayPauseVisuals();
+            return;
         }
         const mediaPath = item.filepath;
         const mimeType = item.mimetype ? item.mimetype.toLowerCase() : 'application/octet-stream';
         const originalFilename = item.original_filename || 'Unknown File';
         if (counterEl) counterEl.textContent = `${currentIndex + 1}/${mediaItems.length}`;
         if (downloadLink && typeof isPublicSlideshowView !== 'undefined' && !isPublicSlideshowView) {
-            downloadLink.href = mediaPath; downloadLink.setAttribute('download', originalFilename);
-            const dlC = downloadLink.closest('.download-container'); if (dlC) dlC.style.display = '';
-        } else if (downloadLink) { const dlC = downloadLink.closest('.download-container'); if (dlC) dlC.style.display = 'none'; }
+            downloadLink.href = mediaPath;
+            downloadLink.setAttribute('download', originalFilename);
+            const dlC = downloadLink.closest('.download-container');
+            if (dlC) dlC.style.display = '';
+        } else if (downloadLink) {
+            const dlC = downloadLink.closest('.download-container');
+            if (dlC) dlC.style.display = 'none';
+        }
 
-        let isAVMedia = false; console.debug(`loadMedia: Path: ${mediaPath}, Mime: ${mimeType}`);
+        let isAVMedia = false;
+        console.debug(`loadMedia: Path: ${mediaPath}, Mime: ${mimeType}`);
 
         if (mimeType.startsWith('image/')) {
             imageEl.onload = () => { hideLoadingSpinner(); imageEl.classList.add('media-active'); console.debug("Img loaded:", mediaPath); };
             imageEl.onerror = () => {
-                console.error("Img onerror:", mediaPath); hideLoadingSpinner();
+                console.error("Img onerror:", mediaPath);
+                hideLoadingSpinner();
                 if (imageEl.src !== brokenImagePath) { imageEl.src = brokenImagePath; imageEl.alt = `Error loading: ${originalFilename}`; }
                 imageEl.classList.add('media-active');
             };
-            imageEl.src = mediaPath; imageEl.alt = originalFilename; imageEl.style.display = 'block';
-            
-            // CRITICAL: Logging for image timer
-            if (isPlayingStateForImages) {
+            imageEl.src = mediaPath;
+            imageEl.alt = originalFilename;
+            imageEl.style.display = 'block';
+
+            if (isSlideshowPlayingIntent) {
                 imageTimer = setTimeout(nextMedia, DEFAULT_IMAGE_DURATION);
-                console.debug("loadMedia (image): Started imageTimer for " + DEFAULT_IMAGE_DURATION + "ms. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("loadMedia (image): Started imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             } else {
-                console.debug("loadMedia (image): Not starting imageTimer as isPlayingStateForImages is false. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("loadMedia (image): Not starting imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             }
 
         } else if (mimeType.startsWith('video/')) {
-            videoEl.src = mediaPath; videoEl.style.display = 'block'; currentMediaElementForSeek = videoEl; isAVMedia = true;
-            setupMediaElementSpecificListeners(videoEl); 
-            videoEl.muted = !hasUserInteractedForSound;
-            if (isPlayingStateForImages) {
-                console.debug("loadMedia: Attempting autoplay for video", mediaPath, "as isPlayingStateForImages is true.");
+            videoEl.src = mediaPath;
+            videoEl.style.display = 'block';
+            currentMediaElementForSeek = videoEl;
+            isAVMedia = true;
+            setupMediaElementSpecificListeners(videoEl);
+            videoEl.muted = !hasUserInteractedForSound; // Mute initially if no interaction
+            if (isSlideshowPlayingIntent) {
+                console.debug("loadMedia: Attempting autoplay for video", mediaPath, "as isSlideshowPlayingIntent is true.");
                 videoEl.play().catch(e => console.warn(`Vid autoplay ${mediaPath}:`, e.message));
             } else {
-                console.debug("loadMedia: Not autoplaying video", mediaPath, "as isPlayingStateForImages is false.");
+                console.debug("loadMedia: Not autoplaying video", mediaPath, "as isSlideshowPlayingIntent is false.");
             }
         } else if (mimeType.startsWith('audio/')) {
-            audioEl.src = mediaPath; audioEl.style.display = 'block'; currentMediaElementForSeek = audioEl; isAVMedia = true;
-            setupMediaElementSpecificListeners(audioEl); 
-            audioEl.muted = !hasUserInteractedForSound;
-            if (isPlayingStateForImages) {
-                console.debug("loadMedia: Attempting autoplay for audio", mediaPath, "as isPlayingStateForImages is true.");
+            audioEl.src = mediaPath;
+            audioEl.style.display = 'block'; // Or 'none' if relying purely on custom controls and no visual for audio element itself
+            currentMediaElementForSeek = audioEl;
+            isAVMedia = true;
+            setupMediaElementSpecificListeners(audioEl);
+            audioEl.muted = !hasUserInteractedForSound; // Mute initially if no interaction
+            if (isSlideshowPlayingIntent) {
+                console.debug("loadMedia: Attempting autoplay for audio", mediaPath, "as isSlideshowPlayingIntent is true.");
                 audioEl.play().catch(e => console.warn(`Aud autoplay ${mediaPath}:`, e.message));
             } else {
-                console.debug("loadMedia: Not autoplaying audio", mediaPath, "as isPlayingStateForImages is false.");
+                console.debug("loadMedia: Not autoplaying audio", mediaPath, "as isSlideshowPlayingIntent is false.");
             }
-        } else { 
-            console.warn("Unsupported type:", mimeType); imageEl.onload = null; imageEl.onerror = null;
-            imageEl.src = filePlaceholderPath; imageEl.alt = `Unsupported: ${originalFilename} (${mimeType})`;
-            imageEl.style.display = 'block'; imageEl.classList.add('media-active'); hideLoadingSpinner();
-            // For unsupported items, check isPlayingStateForImages before setting timer
-            if (isPlayingStateForImages) {
+        } else {
+            console.warn("Unsupported type:", mimeType);
+            imageEl.onload = null;
+            imageEl.onerror = null;
+            imageEl.src = filePlaceholderPath;
+            imageEl.alt = `Unsupported: ${originalFilename} (${mimeType})`;
+            imageEl.style.display = 'block';
+            imageEl.classList.add('media-active');
+            hideLoadingSpinner();
+            if (isSlideshowPlayingIntent) {
                 imageTimer = setTimeout(nextMedia, DEFAULT_IMAGE_DURATION / 2);
-                 console.debug("loadMedia (unsupported item): Started imageTimer for " + (DEFAULT_IMAGE_DURATION / 2) + "ms. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("loadMedia (unsupported item): Started imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             } else {
-                console.debug("loadMedia (unsupported item): Not starting imageTimer. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("loadMedia (unsupported item): Not starting imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             }
         }
 
         if (isAVMedia && progressBarGroup && currentMediaElementForSeek) {
             progressBarGroup.style.display = 'flex';
             if (currentMediaElementForSeek.readyState >= currentMediaElementForSeek.HAVE_METADATA) updateMediaTimelineUI();
-            else { if(mediaProgressBar){mediaProgressBar.max=100;mediaProgressBar.value=0;} if(timeDisplay)timeDisplay.textContent='0:00/0:00';}
+            else {
+                if (mediaProgressBar) { mediaProgressBar.max = 100; mediaProgressBar.value = 0; }
+                if (timeDisplay) timeDisplay.textContent = '0:00/0:00';
+            }
         }
         updatePlayPauseVisuals();
         updateVolumeIcon();
@@ -338,60 +430,84 @@ function initSlideshow() {
         if (currentMediaElementForSeek) {
             isEffectivelyPlaying = !currentMediaElementForSeek.paused && !currentMediaElementForSeek.ended;
         } else if (imageEl.style.display !== 'none' && imageEl.classList.contains('media-active')) {
-            isEffectivelyPlaying = isPlayingStateForImages;
+            // For images, the visual should reflect isSlideshowPlayingIntent
+            isEffectivelyPlaying = isSlideshowPlayingIntent;
         }
         playPauseIcon.className = isEffectivelyPlaying ? 'bi bi-pause-fill' : 'bi bi-play-fill';
         playPauseBtn.title = isEffectivelyPlaying ? "Pause (Spacebar)" : "Play (Spacebar)";
     }
 
-    function nextMedia() { loadMedia((currentIndex + 1) % mediaItems.length); }
-    function prevMedia() { loadMedia((currentIndex - 1 + mediaItems.length) % mediaItems.length); }
+    // MODIFIED FOR ATTEMPT #3: Call clearUnexpectedPauseAssessment
+    function nextMedia() {
+        console.debug("nextMedia: Called. Clearing any unexpected pause assessment.");
+        clearUnexpectedPauseAssessment();
+        loadMedia((currentIndex + 1) % mediaItems.length);
+    }
 
+    // MODIFIED FOR ATTEMPT #3: Call clearUnexpectedPauseAssessment
+    function prevMedia() {
+        console.debug("prevMedia: Called. Clearing any unexpected pause assessment.");
+        clearUnexpectedPauseAssessment();
+        loadMedia((currentIndex - 1 + mediaItems.length) % mediaItems.length);
+    }
+
+    // MODIFIED FOR ATTEMPT #3: Call clearUnexpectedPauseAssessment and manage isSlideshowPlayingIntent
     function togglePlayPause() {
-        console.log("togglePlayPause: Called. Current isPlayingStateForImages (intent):", isPlayingStateForImages);
+        console.log("togglePlayPause: Called. Current isSlideshowPlayingIntent (user intent):", isSlideshowPlayingIntent);
         resetControlsHideTimer();
-        const item = mediaItems[currentIndex]; if (!item) return;
+        const item = mediaItems[currentIndex];
+        if (!item) return;
 
-        if (currentMediaElementForSeek) { 
-            if (isPlayingStateForImages) {
-                console.log("togglePlayPause: A/V - Intent was PLAY. Issuing PAUSE command.");
+        clearUnexpectedPauseAssessment(); // User is explicitly interacting, clear any pending assessment
+
+        if (currentMediaElementForSeek) { // A/V media is active
+            if (!currentMediaElementForSeek.paused) { // If it's currently playing, user wants to pause
+                console.log("togglePlayPause: A/V - Media is playing. Issuing PAUSE command.");
                 currentMediaElementForSeek.pause();
-            } else {
-                console.log("togglePlayPause: A/V - Intent was PAUSE. Issuing PLAY command.");
+                isSlideshowPlayingIntent = false; // User intends to pause
+            } else { // If it's currently paused, user wants to play
+                console.log("togglePlayPause: A/V - Media is paused. Issuing PLAY command.");
                 if (currentMediaElementForSeek.muted && !hasUserInteractedForSound) {
                     currentMediaElementForSeek.muted = false;
-                    hasUserInteractedForSound = true; 
+                    hasUserInteractedForSound = true;
                     updateVolumeIcon();
                 }
-                currentMediaElementForSeek.play().catch(e => {
+                currentMediaElementForSeek.play().then(() => {
+                    console.log("togglePlayPause: A/V - Play command successful.");
+                    isSlideshowPlayingIntent = true; // User intends to play, and play succeeded
+                    updatePlayPauseVisuals(); // Update visuals after successful play sets state
+                }).catch(e => {
                     console.warn("togglePlayPause: A/V - Play command failed:", e.message);
-                    if(isPlayingStateForImages){ 
-                         isPlayingStateForImages = false; 
+                    // If play failed, ensure intent reflects paused state if it's not already
+                    if (isSlideshowPlayingIntent) {
+                        isSlideshowPlayingIntent = false;
                     }
-                    updatePlayPauseVisuals(); 
+                    updatePlayPauseVisuals();
                 });
             }
-        } else { 
-            isPlayingStateForImages = !isPlayingStateForImages; 
-            console.log("togglePlayPause: Image/Other - New isPlayingStateForImages:", isPlayingStateForImages);
+        } else { // Image or other non-A/V media is active
+            isSlideshowPlayingIntent = !isSlideshowPlayingIntent;
+            console.log("togglePlayPause: Image/Other - New isSlideshowPlayingIntent:", isSlideshowPlayingIntent);
             clearTimeout(imageTimer);
             console.debug("togglePlayPause (image/other): Cleared imageTimer (if any).");
 
-            if (isPlayingStateForImages) {
-                const currentItem = mediaItems[currentIndex]; 
-                const currentMime = currentItem && currentItem.mimetype ? currentItem.mimetype.toLowerCase() : '';
-                const duration = (currentMime.startsWith('image/') || !currentMime || imageEl.src === brokenImagePath || imageEl.src === filePlaceholderPath) 
-                                 ? DEFAULT_IMAGE_DURATION 
-                                 : DEFAULT_IMAGE_DURATION / 2; // Shorter for non-images using this path (e.g. placeholders)
-                
+            if (isSlideshowPlayingIntent) {
+                const currentItemMime = mediaItems[currentIndex]?.mimetype?.toLowerCase() || '';
+                const duration = (currentItemMime.startsWith('image/') || !currentItemMime || imageEl.src === brokenImagePath || imageEl.src === filePlaceholderPath) ?
+                    DEFAULT_IMAGE_DURATION :
+                    DEFAULT_IMAGE_DURATION / 2;
                 imageTimer = setTimeout(nextMedia, duration);
-                console.debug("togglePlayPause (image/other): Restarted imageTimer for " + duration + "ms. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("togglePlayPause (image/other): Restarted imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             } else {
-                 console.debug("togglePlayPause (image/other): Not restarting imageTimer as isPlayingStateForImages is now false. isPlayingStateForImages: " + isPlayingStateForImages);
+                console.debug("togglePlayPause (image/other): Not restarting imageTimer. isSlideshowPlayingIntent: " + isSlideshowPlayingIntent);
             }
-            updatePlayPauseVisuals(); 
+        }
+        // Visuals updated inside A/V logic on promise, or here for images
+        if (!currentMediaElementForSeek) {
+            updatePlayPauseVisuals();
         }
     }
+
 
     function handleVolumeChange() {
         if (!volumeControl) return;
@@ -403,30 +519,30 @@ function initSlideshow() {
         if (newVol > 0) {
             if (videoEl && videoEl.muted) videoEl.muted = false;
             if (audioEl && audioEl.muted) audioEl.muted = false;
-            if (!hasUserInteractedForSound) hasUserInteractedForSound = true; 
-        } else { 
+            if (!hasUserInteractedForSound) hasUserInteractedForSound = true;
+        } else {
             if (videoEl && !videoEl.muted) videoEl.muted = true;
             if (audioEl && !audioEl.muted) audioEl.muted = true;
         }
         updateVolumeIcon();
     }
 
-    // === CHUNK 1 START: New Fullscreen Core Logic & Event Handling ===
+    // === Fullscreen Core Logic & Event Handling (CHUNK 1 from your file - appears unchanged) ===
     function requestFullscreenOnElement(element) {
         if (!element) return;
         console.debug("Attempting to request fullscreen on:", element);
         if (element.requestFullscreen) { element.requestFullscreen().catch(err => console.error("FS Request Error:", err.message)); }
-        else if (element.webkitRequestFullscreen) { element.webkitRequestFullscreen(); } 
-        else if (element.mozRequestFullScreen) { element.mozRequestFullScreen(); } 
-        else if (element.msRequestFullscreen) { element.msRequestFullscreen(); } 
+        else if (element.webkitRequestFullscreen) { element.webkitRequestFullscreen(); }
+        else if (element.mozRequestFullScreen) { element.mozRequestFullScreen(); }
+        else if (element.msRequestFullscreen) { element.msRequestFullscreen(); }
         else { console.warn("Fullscreen API not fully supported by this browser or on this element."); }
     }
     function exitFullscreenFromDocument() {
         console.debug("Attempting to exit fullscreen.");
         if (document.exitFullscreen) { document.exitFullscreen().catch(err => console.error("FS Exit Error:", err.message)); }
-        else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); } 
-        else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); } 
-        else if (document.msExitFullscreen) { document.msExitFullscreen(); } 
+        else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+        else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+        else if (document.msExitFullscreen) { document.msExitFullscreen(); }
         else { console.warn("Exit Fullscreen API not fully supported by this browser."); }
     }
     function updateAppFullscreenUI() {
@@ -437,7 +553,7 @@ function initSlideshow() {
         if (isInAnyFullscreen && fsElement === slideshowContainer) {
             slideshowContainer.classList.add('is-truly-fullscreen');
         } else {
-            if(slideshowContainer) slideshowContainer.classList.remove('is-truly-fullscreen');
+            if (slideshowContainer) slideshowContainer.classList.remove('is-truly-fullscreen');
         }
         if (navbarEl) {
             if (isInAnyFullscreen) navbarEl.classList.add('navbar-hidden-true');
@@ -450,10 +566,10 @@ function initSlideshow() {
         if (fullscreenIcon) {
             if (isInAnyFullscreen) {
                 fullscreenIcon.classList.remove('bi-fullscreen'); fullscreenIcon.classList.add('bi-fullscreen-exit');
-                if(fullscreenBtn) fullscreenBtn.title = "Exit Fullscreen (F or Esc)";
+                if (fullscreenBtn) fullscreenBtn.title = "Exit Fullscreen (F or Esc)";
             } else {
                 fullscreenIcon.classList.remove('bi-fullscreen-exit'); fullscreenIcon.classList.add('bi-fullscreen');
-                if(fullscreenBtn) fullscreenBtn.title = "Toggle Fullscreen (F)";
+                if (fullscreenBtn) fullscreenBtn.title = "Toggle Fullscreen (F)";
             }
         }
         if (controlsContainerEl) {
@@ -499,7 +615,7 @@ function initSlideshow() {
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-    setTimeout(handleFullscreenChange, 100);
+    setTimeout(handleFullscreenChange, 100); // Initial check
     // === CHUNK 1 END ===
 
     if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
@@ -511,26 +627,34 @@ function initSlideshow() {
         mediaProgressBar.addEventListener('input', () => {
             if (currentMediaElementForSeek && !isNaN(currentMediaElementForSeek.duration) && isDraggingProgressBar) {
                 if (timeDisplay) timeDisplay.textContent = `${formatTime(mediaProgressBar.value)}/${formatTime(currentMediaElementForSeek.duration)}`;
-            } resetControlsHideTimer(); });
+            }
+            resetControlsHideTimer();
+        });
         mediaProgressBar.addEventListener('change', () => {
             if (currentMediaElementForSeek && !isNaN(currentMediaElementForSeek.duration)) {
-                currentMediaElementForSeek.currentTime = parseFloat(mediaProgressBar.value); }
-            if (isDraggingProgressBar) isDraggingProgressBar = false; resetControlsHideTimer(); });
+                currentMediaElementForSeek.currentTime = parseFloat(mediaProgressBar.value);
+            }
+            if (isDraggingProgressBar) isDraggingProgressBar = false;
+            resetControlsHideTimer();
+        });
         mediaProgressBar.addEventListener('mousedown', () => {
-            if (currentMediaElementForSeek) isDraggingProgressBar = true; resetControlsHideTimer(); });
-        document.addEventListener('mouseup', () => { if (isDraggingProgressBar) isDraggingProgressBar = false; }); 
+            if (currentMediaElementForSeek) isDraggingProgressBar = true;
+            resetControlsHideTimer();
+        });
+        document.addEventListener('mouseup', () => { if (isDraggingProgressBar) isDraggingProgressBar = false; });
     }
 
     const onMediaEnded = (mediaElement) => {
-        console.log(`onMediaEnded: ${mediaElement.id} ended.`);
+        console.log(`onMediaEnded: ${mediaElement.id} ended. Current isSlideshowPlayingIntent: ${isSlideshowPlayingIntent}`);
         if (currentMediaElementForSeek === mediaElement) {
             if (mediaProgressBar && !isNaN(mediaElement.duration)) mediaProgressBar.value = mediaElement.duration;
             updateMediaTimelineUI();
         }
-        if (isPlayingStateForImages) {
+        // Use isSlideshowPlayingIntent to decide whether to advance
+        if (isSlideshowPlayingIntent) {
             nextMedia();
         } else {
-            updatePlayPauseVisuals();
+            updatePlayPauseVisuals(); // Ensure visuals reflect non-playing state
         }
     };
 
@@ -550,126 +674,144 @@ function initSlideshow() {
 
     let touchstartX = 0, touchstartY = 0;
     if (slideshowContainer) {
-        slideshowContainer.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; touchstartY = e.changedTouches[0].screenY; }, {passive:true});
+        slideshowContainer.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; touchstartY = e.changedTouches[0].screenY; }, { passive: true });
         slideshowContainer.addEventListener('touchend', e => {
-            const dX = e.changedTouches[0].screenX - touchstartX; const dY = e.changedTouches[0].screenY - touchstartY;
-            if (Math.abs(dX) > Math.abs(dY) && Math.abs(dX) > 30) { 
+            const dX = e.changedTouches[0].screenX - touchstartX;
+            const dY = e.changedTouches[0].screenY - touchstartY;
+            if (Math.abs(dX) > Math.abs(dY) && Math.abs(dX) > 30) { // Horizontal swipe
                 if (dX < 0) nextMedia(); else prevMedia();
                 resetControlsHideTimer();
             }
-        }, {passive:true});
+        }, { passive: true });
     }
 
     function handleFirstUserGesture() {
         if (!hasUserInteractedForSound) {
             console.log("handleFirstUserGesture: First user gesture detected.");
-            hasUserInteractedForSound = true; 
+            hasUserInteractedForSound = true;
 
             if (currentMediaElementForSeek && currentMediaElementForSeek.muted) {
                 console.log("handleFirstUserGesture: Unmuting media:", currentMediaElementForSeek.id);
                 currentMediaElementForSeek.muted = false;
-                if (isPlayingStateForImages && currentMediaElementForSeek.paused) {
+                // If slideshow intent is play and media was paused due to lack of interaction, try playing
+                if (isSlideshowPlayingIntent && currentMediaElementForSeek.paused) {
                     console.log("handleFirstUserGesture: Attempting to play previously blocked/muted media:", currentMediaElementForSeek.id);
                     currentMediaElementForSeek.play().catch(e => console.warn("handleFirstUserGesture: Delayed play failed:", e.message));
                 }
             }
-            updateVolumeIcon(); 
+            updateVolumeIcon();
         }
     }
-    ['click','keydown','touchstart'].forEach(evt=>document.addEventListener(evt,handleFirstUserGesture,{once:true,capture:true}));
+    ['click', 'keydown', 'touchstart'].forEach(evt => document.addEventListener(evt, handleFirstUserGesture, { once: true, capture: true }));
 
-    // === CHUNK 2 START: Modified Auto-Hide Controls Logic ===
+    // === Auto-Hide Controls Logic (CHUNK 2 from your file - appears unchanged) ===
     function showControls() {
         if (!controlsContainerEl) return;
         controlsContainerEl.classList.remove('controls-hidden');
-        if (isAppInitiatedFullscreen) {
+        if (isAppInitiatedFullscreen) { // Only show navbar/return if app is fullscreen
             if (navbarEl) navbarEl.classList.remove('navbar-hidden');
             if (returnLinkEl) returnLinkEl.classList.remove('element-hidden-via-autohide');
         }
     }
     function hideControls() {
         if (document.activeElement &&
-            (document.activeElement.closest('.controls-container') || document.activeElement.closest('.navbar')) ) {
+            (document.activeElement.closest('.controls-container') || document.activeElement.closest('.navbar'))) {
             if (typeof resetControlsHideTimer === "function") resetControlsHideTimer();
             return;
         }
-        if (document.querySelector('.modal.show')) {
+        if (document.querySelector('.modal.show')) { // Don't hide if a modal is open
             if (typeof resetControlsHideTimer === "function") resetControlsHideTimer();
             return;
         }
+
+        // Only hide if app initiated fullscreen
         if (isAppInitiatedFullscreen) {
             if (controlsContainerEl) controlsContainerEl.classList.add('controls-hidden');
             if (navbarEl) navbarEl.classList.add('navbar-hidden');
             if (returnLinkEl) returnLinkEl.classList.add('element-hidden-via-autohide');
         } else {
+             // If not in app fullscreen, ensure controlsHideTimer is cleared so they don't hide
             clearTimeout(controlsHideTimer);
         }
     }
     function resetControlsHideTimer() {
         clearTimeout(controlsHideTimer);
-        showControls();
+        showControls(); // Always show on activity
+
         const currentItemIsImage = imageEl && imageEl.style.display !== 'none' && imageEl.classList.contains('media-active');
+        // Check actual media state for A/V, or isSlideshowPlayingIntent for images
         const mediaIsEffectivelyPlayingOrDisplayed =
             (currentMediaElementForSeek && !currentMediaElementForSeek.paused && !currentMediaElementForSeek.ended) ||
-            (currentItemIsImage && isPlayingStateForImages);
+            (currentItemIsImage && isSlideshowPlayingIntent);
+
         const isAnyModalVisible = !!document.querySelector('.modal.show');
+
         if (isAppInitiatedFullscreen && mediaIsEffectivelyPlayingOrDisplayed && !isAnyModalVisible) {
             controlsHideTimer = setTimeout(hideControls, CONTROLS_HIDE_DELAY);
-        } else if (isAppInitiatedFullscreen && currentItemIsImage && !isPlayingStateForImages && !isAnyModalVisible) {
-            controlsHideTimer = setTimeout(hideControls, CONTROLS_HIDE_DELAY + 2000);
-        } else if (isAppInitiatedFullscreen && currentMediaElementForSeek && currentMediaElementForSeek.paused && !isAnyModalVisible) {
-            controlsHideTimer = setTimeout(hideControls, CONTROLS_HIDE_DELAY);
+        } else if (isAppInitiatedFullscreen && currentItemIsImage && !isSlideshowPlayingIntent && !isAnyModalVisible) { // Image paused
+            controlsHideTimer = setTimeout(hideControls, CONTROLS_HIDE_DELAY + 2000); // Longer delay for paused image
+        } else if (isAppInitiatedFullscreen && currentMediaElementForSeek && currentMediaElementForSeek.paused && !isAnyModalVisible) { // A/V paused
+            controlsHideTimer = setTimeout(hideControls, CONTROLS_HIDE_DELAY); // Standard delay for paused A/V
         }
+        // If not isAppInitiatedFullscreen, controls remain visible unless explicitly hidden elsewhere
     }
     // === CHUNK 2 END ===
 
     if (slideshowContainer) {
         slideshowContainer.addEventListener('mousemove', resetControlsHideTimer, { passive: true });
         slideshowContainer.addEventListener('click', (e) => {
+            // Only toggle play/pause if click is on container/image/video itself, not controls
             if (e.target === imageEl || e.target === videoEl || e.target === slideshowContainer) {
+                // Further check for native video controls click
                 const isVideoControlsClick = currentMediaElementForSeek === videoEl &&
-                                             videoEl.controls && 
-                                             e.offsetY > (videoEl.offsetHeight - 40); 
+                    videoEl.controls && // Check if native controls are enabled (though typically we hide them)
+                    e.offsetY > (videoEl.offsetHeight - 40); // Heuristic: click in bottom 40px
+
                 if (!isVideoControlsClick) {
                     togglePlayPause();
                 }
             }
-            resetControlsHideTimer(); 
+            resetControlsHideTimer(); // Reset timer on any click within container
         });
     }
-    [controlsContainerEl, navbarEl].forEach(el => { if (el) {
-        el.addEventListener('mouseenter', () => clearTimeout(controlsHideTimer));
-        el.addEventListener('mouseleave', resetControlsHideTimer); }});
+    [controlsContainerEl, navbarEl].forEach(el => {
+        if (el) {
+            el.addEventListener('mouseenter', () => clearTimeout(controlsHideTimer));
+            el.addEventListener('mouseleave', resetControlsHideTimer);
+        }
+    });
 
     console.log("initSlideshow: Performing initial media load.");
-    loadMedia(0); 
-    updateVolumeIcon(); 
-    resetControlsHideTimer(); 
+    loadMedia(0);
+    updateVolumeIcon(); // Set initial volume icon
+    resetControlsHideTimer(); // Initial timer setup for controls visibility
 
-    if (volumeControl) { 
+    // Set initial volume for media elements after a slight delay, ensuring they are loaded
+    if (volumeControl) {
         const setInitialVolumeSafe = (mediaEl) => {
             if (mediaEl && typeof mediaEl.volume !== 'undefined') {
                 const setVol = () => mediaEl.volume = parseFloat(volumeControl.value);
-                if (mediaEl.readyState >= mediaEl.HAVE_METADATA) {
+                if (mediaEl.readyState >= mediaEl.HAVE_METADATA) { // HAVE_METADATA or higher
                     setVol();
                 } else {
-                    mediaEl.addEventListener('loadedmetadata', function onLd(){
+                    mediaEl.addEventListener('loadedmetadata', function onLd() {
                         setVol();
-                        mediaEl.removeEventListener('loadedmetadata', onLd);
-                    },{once:true});
+                        mediaEl.removeEventListener('loadedmetadata', onLd); // Clean up
+                    }, { once: true });
                 }
             }
-            updateVolumeIcon(); 
+            updateVolumeIcon(); // Update icon after setting volume
         };
+        // Apply after initial media load and potential transition
         setTimeout(() => {
             if (currentMediaElementForSeek) {
                 setInitialVolumeSafe(currentMediaElementForSeek);
-            } else if (videoEl.src || audioEl.src) { 
+            } else if (videoEl.src || audioEl.src) { // If an AV element has a src but isn't current (e.g. during init)
                 setInitialVolumeSafe(videoEl.src ? videoEl : audioEl);
             } else {
-                 updateVolumeIcon(); 
+                 updateVolumeIcon(); // Just ensure icon is correct if no media
             }
-        }, MEDIA_TRANSITION_DURATION + 200); 
+        }, MEDIA_TRANSITION_DURATION + 200); // Delay to allow media element to potentially load
     }
 
 } // --- End of initSlideshow function ---
