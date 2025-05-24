@@ -26,8 +26,7 @@
     <meta property="og:url" content="{{ request.url }}">
     <meta property="og:title" content="{% filter striptags %}{% block og_title_content %}{{ self.title() }}{% endblock %}{% endfilter %}">
     <meta property="og:description" content="{% block og_description_content %}{% filter striptags %}{{ self.meta_description() }}{% endfilter %}{% endblock %}">
-    {# Commented out until og-default-image.png is ready and path is confirmed #}
-    {# <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='images/favicon/og-default-image.png', _external=True) }}{% endblock %}"> #}
+    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='images/favicon/og-default-image.jpg', _external=True) }}{% endblock %}">
     <meta property="og:site_name" content="LightBox">
 
     <!-- Twitter Card Meta Tags -->
@@ -35,8 +34,7 @@
     <meta name="twitter:url" content="{{ request.url }}">
     <meta name="twitter:title" content="{% filter striptags %}{% block twitter_title_content %}{{ self.title() }}{% endblock %}{% endfilter %}">
     <meta name="twitter:description" content="{% block twitter_description_content %}{% filter striptags %}{{ self.meta_description() }}{% endfilter %}{% endblock %}">
-    {# Commented out until og-default-image.png is ready and path is confirmed #}
-    {# <meta name="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='images/favicon/og-default-image.png', _external=True) }}{% endblock %}"> #}
+    <meta name="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='images/favicon/og-default-image.jpg', _external=True) }}{% endblock %}">
     {# <meta name="twitter:site" content="@YourTwitterHandle"> #}
     {# <meta name="twitter:creator" content="@YourTwitterHandle"> #}
 
