@@ -1,0 +1,68 @@
+# =============================================================================
+# LightBox — Frontend Dockerfile
+# Multi-stage build: deps → builder → runner
+#
+# Stage 1 (deps):    npm ci — cached unless package*.json changes
+# Stage 2 (builder): next build — cached unless source changes
+# Stage 3 (runner):  Minimal Alpine runtime, standalone output only
+#
+# Build:
+#   docker build -f Dockerfile.frontend -t claude-vid-frontend:latest ./frontend
+#
+# Run standalone:
+#   docker run -p 3005:3005 --env-file frontend/.env.local claude-vid-frontend:latest
+# =============================================================================
+
+ARG NODE_VERSION=22.16.0
+
+# ── Stage 1: deps ────────────────────────────────────────────────────────────
+FROM node:${NODE_VERSION}-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json package-lock.json* .npmrc* ./
+RUN npm ci --legacy-peer-deps
+
+# ── Stage 2: builder ─────────────────────────────────────────────────────────
+FROM node:${NODE_VERSION}-alpine AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+
+# Config files change less often than source — order for cache hits
+COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+COPY package.json package-lock.json* .npmrc* ./
+COPY public      ./public
+COPY app         ./app
+COPY components  ./components
+COPY lib         ./lib
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+# Flask is reachable on the host network at localhost:5102
+ENV FLASK_INTERNAL_URL=http://localhost:5102
+
+RUN npm run build
+
+# ── Stage 3: runner ──────────────────────────────────────────────────────────
+FROM node:${NODE_VERSION}-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3005
+ENV HOSTNAME=""
+
+# Non-root user — security best practice
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser  --system --uid 1001 nextjs
+
+# Standalone output + static assets only — no node_modules, no source
+COPY --from=builder /app/public                    ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+
+USER nextjs
+EXPOSE 3005
+
+# next.js standalone generates server.js
+CMD ["node", "server.js"]

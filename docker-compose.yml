@@ -1,0 +1,28 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
+    image: claude-vid-frontend:latest
+    container_name: claude-vid-frontend
+    restart: unless-stopped
+
+    # Host networking so Next.js can reach Flask at localhost:5102
+    # (same as arc_stack pattern — Flask runs natively, not in Docker)
+    network_mode: host
+
+    environment:
+      PORT: 3005
+      HOSTNAME: ""
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      FLASK_INTERNAL_URL: http://localhost:5102
+
+    env_file:
+      - ./frontend/.env.local   # optional overrides (not committed)
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"

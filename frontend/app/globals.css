@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS custom properties (match Flask app variables) ── */
+:root {
+  --color-base:        #0a0a10;
+  --color-card:        #131318;
+  --color-card-hover:  #181820;
+  --color-input:       #1c1c25;
+  --color-thumb:       #1a1a22;
+  --color-border:      #21212e;
+  --color-border-soft: #1c1c28;
+  --color-txt:         #dddde8;
+  --color-muted:       #7070a0;
+  --color-faint:       #3a3a55;
+  --color-accent:      #7c7cf8;
+  --color-accent-h:    #a0a0fc;
+  --color-success:     #34d399;
+  --color-danger:      #f87171;
+  --color-warning:     #fbbf24;
+  --color-info:        #60a5fa;
+}
+
+/* ── Base resets ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-txt);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  min-height: 100dvh;
+  margin: 0;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-txt);
+}
+
+a { color: var(--color-accent); text-decoration: none; }
+a:hover { color: var(--color-accent-h); }
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-base); }
+::-webkit-scrollbar-thumb { background: var(--color-faint); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+
+/* ── Components ── */
+@layer components {
+  /* Card */
+  .card {
+    @apply bg-card border border-border rounded-lg;
+  }
+  .card-hover {
+    @apply transition-colors duration-150 hover:bg-card-hover hover:border-faint;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded font-medium text-sm
+           transition-all duration-150 cursor-pointer select-none;
+  }
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white hover:bg-accent-hover;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-muted border border-border hover:bg-card hover:text-txt hover:border-faint;
+  }
+  .btn-danger {
+    @apply btn bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20;
+  }
+  .btn-success {
+    @apply btn bg-success/10 text-success border border-success/30 hover:bg-success/20;
+  }
+  .btn-icon {
+    @apply btn p-2 bg-transparent text-muted border border-transparent hover:bg-card hover:border-border hover:text-txt;
+  }
+
+  /* Input */
+  .input {
+    @apply w-full px-3 py-2 bg-input border border-border rounded text-txt text-sm
+           placeholder:text-muted focus:outline-none focus:border-accent transition-colors;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+  .badge-accent { @apply badge bg-accent/15 text-accent; }
+  .badge-muted  { @apply badge bg-faint/40 text-muted; }
+  .badge-success { @apply badge bg-success/15 text-success; }
+  .badge-danger  { @apply badge bg-danger/15 text-danger; }
+  .badge-warning { @apply badge bg-warning/15 text-warning; }
+  .badge-info    { @apply badge bg-info/15 text-info; }
+
+  /* Toast */
+  .toast {
+    @apply fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium
+           transition-all duration-300 max-w-sm;
+  }
+  .toast-success { @apply toast bg-success/20 border border-success/40 text-success; }
+  .toast-error   { @apply toast bg-danger/20 border border-danger/40 text-danger; }
+  .toast-info    { @apply toast bg-info/20 border border-info/40 text-info; }
+
+  /* Page container */
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6;
+  }
+  .page-header {
+    @apply flex items-center justify-between gap-4 mb-6;
+  }
+  .page-title {
+    @apply text-2xl font-bold text-txt;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply bg-card animate-pulse rounded;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center gap-4 py-20 text-center;
+  }
+  .empty-state-icon {
+    @apply text-faint;
+  }
+  .empty-state-title {
+    @apply text-lg font-semibold text-txt;
+  }
+  .empty-state-desc {
+    @apply text-sm text-muted max-w-xs;
+  }
+}
+
+/* ── Utility extras ── */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* ── Media thumbnail aspect ratio ── */
+.media-thumb {
+  aspect-ratio: 16/9;
+  background-color: var(--color-thumb);
+  overflow: hidden;
+  position: relative;
+}
+.media-thumb img,
+.media-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Upload drag-over state ── */
+.drop-zone-active {
+  border-color: var(--color-accent) !important;
+  background-color: color-mix(in srgb, var(--color-accent) 8%, transparent) !important;
+}
+
+/* ── Slideshow fullscreen overlay ── */
+.slideshow-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
