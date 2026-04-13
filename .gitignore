@@ -1,0 +1,6 @@
+node_modules/
+frontend/.next/
+frontend/node_modules/
+logs/
+pids/
+*.log
