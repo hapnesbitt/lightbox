@@ -26,6 +26,11 @@ export function NavbarClient({ username }: NavbarClientProps) {
           <span>LightBox</span>
         </Link>
 
+        {/* Centre nav */}
+        <Link href="/about" className="text-sm text-muted hover:text-txt transition-colors">
+          About
+        </Link>
+
         {/* Right side */}
         {username ? (
           <div className="relative">

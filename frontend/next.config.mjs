@@ -7,6 +7,9 @@ const nextConfig = {
   env: {
     FLASK_INTERNAL_URL: process.env.FLASK_INTERNAL_URL ?? 'http://localhost:5102',
   },
+  experimental: {
+    serverActions: { bodySizeLimit: '10gb' },
+  },
 };
 
 export default nextConfig;

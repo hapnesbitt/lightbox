@@ -22,6 +22,7 @@ export function UploadArea({ batches }: UploadAreaProps) {
   const [existingBatchId, setExistingBatchId] = useState('');
   const [uploadType, setUploadType] = useState('media');
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const addFiles = useCallback((incoming: FileList | null) => {
     if (!incoming) return;
@@ -47,10 +48,11 @@ export function UploadArea({ batches }: UploadAreaProps) {
     addFiles(e.dataTransfer.files);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (files.length === 0) return;
     setUploading(true);
+    setUploadProgress(0);
 
     const formData = new FormData();
     formData.set('upload_type', uploadType);
@@ -63,17 +65,18 @@ export function UploadArea({ batches }: UploadAreaProps) {
       formData.append('files[]', file);
     }
 
-    try {
-      await fetch('/api/flask/upload', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-        redirect: 'manual',
-      });
-    } finally {
-      setUploading(false);
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+    xhr.upload.addEventListener('progress', (ev) => {
+      if (ev.lengthComputable) {
+        setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+      }
+    });
+    xhr.addEventListener('loadend', () => {
       window.location.reload();
-    }
+    });
+    xhr.open('POST', '/api/flask/upload');
+    xhr.send(formData);
   }
 
   const destinationName =
@@ -198,7 +201,23 @@ export function UploadArea({ batches }: UploadAreaProps) {
         </select>
       )}
 
-<button type="submit" disabled={uploading || files.length === 0} className="btn-primary w-full">
+      {uploading && (
+        <div className="space-y-1" role="status" aria-label={`Uploading — ${uploadProgress}%`}>
+          <div className="flex justify-between text-xs text-muted">
+            <span>Uploading…</span>
+            <span>{uploadProgress}%</span>
+          </div>
+          <div className="w-full h-1.5 rounded-full bg-border overflow-hidden">
+            <div
+              className="h-full rounded-full bg-accent transition-[width] duration-150"
+              style={{ width: `${uploadProgress}%` }}
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+      )}
+
+      <button type="submit" disabled={uploading || files.length === 0} className="btn-primary w-full">
         {uploading
           ? 'Uploading…'
           : files.length === 0

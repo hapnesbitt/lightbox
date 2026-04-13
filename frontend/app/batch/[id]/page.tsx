@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getBatchDetail } from '@/lib/flask';
 import { MediaCard } from '@/components/MediaCard';
 import { UploadDrawer } from '@/components/UploadDrawer';
+import { ShareToggleButton } from '@/components/ShareToggleButton';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -45,12 +46,7 @@ export default async function BatchPage({ params }: Props) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {batch.isShared && batch.publicUrl && (
-            <a href={batch.publicUrl} target="_blank" rel="noopener noreferrer"
-              className="btn-ghost text-sm" aria-label="Open public share link in new tab">
-              Public link ↗
-            </a>
-          )}
+          <ShareToggleButton batchId={id} isShared={batch.isShared} shareToken={batch.shareToken} />
         </div>
       </div>
 

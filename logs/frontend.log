@@ -10133,3 +10133,1114 @@
  Container claude-vid-frontend  Recreated
  Container claude-vid-frontend  Starting
  Container claude-vid-frontend  Started
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.4s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [frontend builder  2/10] WORKDIR /app
+#4 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 CACHED
+
+#6 [frontend internal] load build context
+#6 transferring context: 2.14kB 0.1s done
+#6 DONE 0.1s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.271 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 ...
+
+#8 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#8 DONE 0.3s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.525 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 1.039 (1/3) Installing musl-obstack (1.2.3-r2)
+#7 1.052 (2/3) Installing libucontext (1.3.2-r0)
+#7 1.062 (3/3) Installing gcompat (1.1.0-r4)
+#7 1.075 OK: 10 MiB in 21 packages
+#7 DONE 1.2s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 0.1s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.1s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 1.364 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 14.69 
+#11 14.69 added 134 packages, and audited 135 packages in 14s
+#11 14.69 
+#11 14.69 47 packages are looking for funding
+#11 14.69   run `npm fund` for details
+#11 14.69 
+#11 14.69 found 0 vulnerabilities
+#11 14.69 npm notice
+#11 14.69 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 14.69 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 14.69 npm notice To update run: npm install -g npm@11.12.1
+#11 14.69 npm notice
+#11 DONE 15.7s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 2.9s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.2s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.1s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.1s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.1s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.1s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.1s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.621 
+#19 0.621 > claude-vid-frontend@1.0.0 build
+#19 0.621 > next build
+#19 0.621 
+#19 1.404    ▲ Next.js 15.5.15
+#19 1.405 
+#19 1.440    Creating an optimized production build ...
+#19 14.23  ✓ Compiled successfully in 9.8s
+#19 14.23    Linting and checking validity of types ...
+#19 18.23    Collecting page data ...
+#19 20.82    Generating static pages (0/8) ...
+#19 21.51    Generating static pages (2/8) 
+#19 21.55    Generating static pages (4/8) 
+#19 21.59    Generating static pages (6/8) 
+#19 21.59  ✓ Generating static pages (8/8)
+#19 22.57    Finalizing page optimization ...
+#19 22.57    Collecting build traces ...
+#19 42.31 
+#19 42.31 Route (app)                                 Size  First Load JS
+#19 42.31 ┌ ƒ /                                    3.39 kB         109 kB
+#19 42.31 ├ ƒ /_not-found                            991 B         103 kB
+#19 42.31 ├ ƒ /api/csrf                              131 B         102 kB
+#19 42.31 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 42.31 ├ ƒ /batch/[id]                          4.41 kB         110 kB
+#19 42.31 ├ ƒ /login                                 165 B         106 kB
+#19 42.31 ├ ƒ /logout                                131 B         102 kB
+#19 42.31 ├ ƒ /public/batch/[token]                  165 B         106 kB
+#19 42.31 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 42.31 ├ ƒ /register                            1.56 kB         107 kB
+#19 42.31 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 42.31 + First Load JS shared by all             102 kB
+#19 42.31   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 42.31   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 42.31   └ other shared chunks (total)          1.92 kB
+#19 42.31 
+#19 42.31 
+#19 42.31 ƒ  (Dynamic)  server-rendered on demand
+#19 42.31 
+#19 42.40 npm notice
+#19 42.40 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 42.40 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 42.40 npm notice To update run: npm install -g npm@11.12.1
+#19 42.40 npm notice
+#19 DONE 42.7s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.1s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.6s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.2s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 7.4s done
+#23 exporting manifest sha256:3b92f5b207ba9bad4a77187e654b9be1103a8d07451c4238d316f75159a324c3 0.0s done
+#23 exporting config sha256:569f49a3e409b4b4656ef82391bc0a44fa9890ad29fe2675ae87278fbc95f7a1 0.0s done
+#23 exporting attestation manifest sha256:3b7e1cffea77cce352fc2aa29eb0512099e16a247a472623d45410fba0732faa 0.0s done
+#23 exporting manifest list sha256:392a7f761b8d7b9ad42ccceb2b552a4418888d0c4e337710772de18a2691d135 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 1.4s done
+#23 DONE 8.9s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+ Container claude-vid-frontend  Created
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend Running 
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.5s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [frontend builder  2/10] WORKDIR /app
+#4 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 CACHED
+
+#6 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#6 DONE 0.3s
+
+#7 [frontend internal] load build context
+#7 transferring context: 2.77kB 0.5s done
+#7 DONE 0.6s
+
+#8 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#8 0.309 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#8 0.568 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#8 1.096 (1/3) Installing musl-obstack (1.2.3-r2)
+#8 1.106 (2/3) Installing libucontext (1.3.2-r0)
+#8 1.112 (3/3) Installing gcompat (1.1.0-r4)
+#8 1.124 OK: 10 MiB in 21 packages
+#8 DONE 1.3s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 0.2s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.2s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 2.406 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 15.86 
+#11 15.86 added 134 packages, and audited 135 packages in 15s
+#11 15.86 
+#11 15.86 47 packages are looking for funding
+#11 15.86   run `npm fund` for details
+#11 15.86 
+#11 15.86 found 0 vulnerabilities
+#11 15.86 npm notice
+#11 15.86 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 15.86 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 15.86 npm notice To update run: npm install -g npm@11.12.1
+#11 15.86 npm notice
+#11 DONE 19.5s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 4.0s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.3s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.2s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.2s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.2s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.2s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.2s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.681 
+#19 0.681 > claude-vid-frontend@1.0.0 build
+#19 0.681 > next build
+#19 0.681 
+#19 1.467    ▲ Next.js 15.5.15
+#19 1.468    - Experiments (use with caution):
+#19 1.468      · serverActions
+#19 1.468 
+#19 1.505    Creating an optimized production build ...
+#19 14.09  ✓ Compiled successfully in 9.7s
+#19 14.09    Linting and checking validity of types ...
+#19 18.28    Collecting page data ...
+#19 20.96    Generating static pages (0/8) ...
+#19 21.70    Generating static pages (2/8) 
+#19 21.75    Generating static pages (4/8) 
+#19 21.78    Generating static pages (6/8) 
+#19 21.78  ✓ Generating static pages (8/8)
+#19 22.81    Finalizing page optimization ...
+#19 22.81    Collecting build traces ...
+#19 42.53 
+#19 42.55 Route (app)                                 Size  First Load JS
+#19 42.55 ┌ ƒ /                                    3.39 kB         109 kB
+#19 42.55 ├ ƒ /_not-found                            991 B         103 kB
+#19 42.55 ├ ƒ /api/csrf                              131 B         102 kB
+#19 42.55 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 42.55 ├ ƒ /batch/[id]                          4.41 kB         110 kB
+#19 42.55 ├ ƒ /login                                 165 B         106 kB
+#19 42.55 ├ ƒ /logout                                131 B         102 kB
+#19 42.55 ├ ƒ /public/batch/[token]                  165 B         106 kB
+#19 42.55 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 42.55 ├ ƒ /register                            1.56 kB         107 kB
+#19 42.55 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 42.55 + First Load JS shared by all             102 kB
+#19 42.55   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 42.55   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 42.55   └ other shared chunks (total)          1.92 kB
+#19 42.55 
+#19 42.55 
+#19 42.55 ƒ  (Dynamic)  server-rendered on demand
+#19 42.55 
+#19 42.64 npm notice
+#19 42.64 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 42.64 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 42.64 npm notice To update run: npm install -g npm@11.12.1
+#19 42.64 npm notice
+#19 DONE 42.9s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.2s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.8s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.3s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 6.8s done
+#23 exporting manifest sha256:d9353d80dcd36cd4eaeafda02c959d350f0648e84844a8eaac5865d33c69ccc9 0.0s done
+#23 exporting config sha256:965cbcc68ff65739fc3ed426bfd06dcd3837ed714f77629bb39ea024d666d492 0.0s done
+#23 exporting attestation manifest sha256:8bc602b7df48c3dec4bcd4eb81d76b8f19d70322f39740b836e1cb95e7b7d9f4 0.1s done
+#23 exporting manifest list sha256:4864eb9bc84c9697ed3e686c3ef2eedc7f2127fbd78d032cb00dd3e8b60ed416 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 1.2s done
+#23 DONE 8.1s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.1s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.3s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [frontend internal] load build context
+#4 DONE 0.0s
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 DONE 0.0s
+
+#6 [frontend builder  2/10] WORKDIR /app
+#6 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 CACHED
+
+#4 [frontend internal] load build context
+#4 transferring context: 10.92kB 0.1s done
+#4 DONE 0.2s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.357 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 ...
+
+#8 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#8 DONE 0.4s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.473 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 0.853 (1/3) Installing musl-obstack (1.2.3-r2)
+#7 0.866 (2/3) Installing libucontext (1.3.2-r0)
+#7 0.873 (3/3) Installing gcompat (1.1.0-r4)
+#7 0.889 OK: 10 MiB in 21 packages
+#7 DONE 1.1s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 0.2s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.2s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 1.326 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 14.62 
+#11 14.62 added 134 packages, and audited 135 packages in 14s
+#11 14.62 
+#11 14.62 47 packages are looking for funding
+#11 14.62   run `npm fund` for details
+#11 14.62 
+#11 14.62 found 0 vulnerabilities
+#11 14.62 npm notice
+#11 14.62 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 14.62 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 14.62 npm notice To update run: npm install -g npm@11.12.1
+#11 14.62 npm notice
+#11 DONE 15.7s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 3.0s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.4s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.1s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.1s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.1s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.1s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.1s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.594 
+#19 0.594 > claude-vid-frontend@1.0.0 build
+#19 0.594 > next build
+#19 0.594 
+#19 1.344    ▲ Next.js 15.5.15
+#19 1.344    - Experiments (use with caution):
+#19 1.344      · serverActions
+#19 1.344 
+#19 1.378    Creating an optimized production build ...
+#19 13.62  ✓ Compiled successfully in 9.4s
+#19 13.62    Linting and checking validity of types ...
+#19 17.03    Collecting page data ...
+#19 19.41    Generating static pages (0/8) ...
+#19 20.04    Generating static pages (2/8) 
+#19 20.09    Generating static pages (4/8) 
+#19 20.31    Generating static pages (6/8) 
+#19 20.31  ✓ Generating static pages (8/8)
+#19 21.07    Finalizing page optimization ...
+#19 21.07    Collecting build traces ...
+#19 39.83 
+#19 39.84 Route (app)                                 Size  First Load JS
+#19 39.84 ┌ ƒ /                                    3.61 kB         109 kB
+#19 39.84 ├ ƒ /_not-found                            991 B         103 kB
+#19 39.84 ├ ƒ /api/csrf                              131 B         102 kB
+#19 39.84 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 39.84 ├ ƒ /batch/[id]                          4.62 kB         110 kB
+#19 39.84 ├ ƒ /login                                 165 B         106 kB
+#19 39.84 ├ ƒ /logout                                131 B         102 kB
+#19 39.84 ├ ƒ /public/batch/[token]                  165 B         106 kB
+#19 39.84 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 39.84 ├ ƒ /register                            1.56 kB         107 kB
+#19 39.84 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 39.84 + First Load JS shared by all             102 kB
+#19 39.84   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 39.84   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 39.84   └ other shared chunks (total)          1.92 kB
+#19 39.84 
+#19 39.84 
+#19 39.84 ƒ  (Dynamic)  server-rendered on demand
+#19 39.84 
+#19 39.89 npm notice
+#19 39.89 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 39.89 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 39.89 npm notice To update run: npm install -g npm@11.12.1
+#19 39.89 npm notice
+#19 DONE 40.2s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.1s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.6s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.1s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 6.2s done
+#23 exporting manifest sha256:0f67da79b9df9a654f2c722645621b0a461347761951bff4eb07b1d08661b941 0.0s done
+#23 exporting config sha256:bb2d38cf839383d8cd686a39e2b5133ccc8aa5c83b65368b56f414f2d2258211 0.0s done
+#23 exporting attestation manifest sha256:73724259a51c4588661ce0e81ead71ef628fab72f5db2bbe4804603cf7ce3896 0.0s done
+#23 exporting manifest list sha256:d8c53756ad4ce716b7bda1b0adf44decac42af8f51565cd229a0a5910029f586 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 1.0s done
+#23 DONE 7.2s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.5s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [frontend builder  2/10] WORKDIR /app
+#4 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 CACHED
+
+#6 [frontend internal] load build context
+#6 transferring context: 16.89kB 0.1s done
+#6 DONE 0.1s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.300 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 ...
+
+#8 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#8 DONE 0.3s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.461 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 0.881 (1/3) Installing musl-obstack (1.2.3-r2)
+#7 0.900 (2/3) Installing libucontext (1.3.2-r0)
+#7 0.908 (3/3) Installing gcompat (1.1.0-r4)
+#7 0.919 OK: 10 MiB in 21 packages
+#7 DONE 1.0s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 1.9s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.1s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 1.423 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 14.72 
+#11 14.72 added 134 packages, and audited 135 packages in 14s
+#11 14.72 
+#11 14.72 47 packages are looking for funding
+#11 14.72   run `npm fund` for details
+#11 14.72 
+#11 14.72 found 0 vulnerabilities
+#11 14.73 npm notice
+#11 14.73 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 14.73 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 14.73 npm notice To update run: npm install -g npm@11.12.1
+#11 14.73 npm notice
+#11 DONE 15.8s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 2.9s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.2s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.1s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.1s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.1s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.1s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.1s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.594 
+#19 0.594 > claude-vid-frontend@1.0.0 build
+#19 0.594 > next build
+#19 0.594 
+#19 1.375    ▲ Next.js 15.5.15
+#19 1.375    - Experiments (use with caution):
+#19 1.375      · serverActions
+#19 1.375 
+#19 1.408    Creating an optimized production build ...
+#19 13.89  ✓ Compiled successfully in 9.5s
+#19 13.90    Linting and checking validity of types ...
+#19 17.59    Collecting page data ...
+#19 20.05    Generating static pages (0/9) ...
+#19 20.74    Generating static pages (2/9) 
+#19 20.77    Generating static pages (4/9) 
+#19 20.77    Generating static pages (6/9) 
+#19 20.80  ✓ Generating static pages (9/9)
+#19 21.75    Finalizing page optimization ...
+#19 21.75    Collecting build traces ...
+#19 41.21 
+#19 41.21 Route (app)                                 Size  First Load JS
+#19 41.21 ┌ ƒ /                                    3.61 kB         109 kB
+#19 41.21 ├ ƒ /_not-found                            991 B         103 kB
+#19 41.21 ├ ƒ /about                                 168 B         106 kB
+#19 41.21 ├ ƒ /api/csrf                              131 B         102 kB
+#19 41.21 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 41.21 ├ ƒ /batch/[id]                          4.62 kB         110 kB
+#19 41.21 ├ ƒ /login                                 168 B         106 kB
+#19 41.21 ├ ƒ /logout                                131 B         102 kB
+#19 41.21 ├ ƒ /public/batch/[token]                  168 B         106 kB
+#19 41.21 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 41.21 ├ ƒ /register                            1.56 kB         107 kB
+#19 41.21 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 41.21 + First Load JS shared by all             102 kB
+#19 41.21   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 41.21   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 41.21   └ other shared chunks (total)          1.92 kB
+#19 41.21 
+#19 41.21 
+#19 41.21 ƒ  (Dynamic)  server-rendered on demand
+#19 41.21 
+#19 41.28 npm notice
+#19 41.28 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 41.28 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 41.28 npm notice To update run: npm install -g npm@11.12.1
+#19 41.28 npm notice
+#19 DONE 41.5s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.1s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.5s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.1s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 4.4s done
+#23 exporting manifest sha256:2cdd04a31d39b63bd98e7c52598c21a0b7397f73ee856e6fb0fdbf0642f97a7d 0.0s done
+#23 exporting config sha256:52e2b39be68424650a0c8bb523fb17ac91f31479e676531372f68291d7dfffb5 0.0s done
+#23 exporting attestation manifest sha256:0706a6dafcef50ca8bb7842fcff41b687ab3184cfc369b438066e34da5abaee4 0.0s done
+#23 exporting manifest list sha256:e97ee1f87da4c36957124b20858d8c7c813ce88114f6414685fb438c03ce449a 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 0.7s done
+#23 DONE 5.2s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.5s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [frontend builder  2/10] WORKDIR /app
+#4 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 CACHED
+
+#6 [frontend internal] load build context
+#6 transferring context: 6.83kB 0.1s done
+#6 DONE 0.1s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.291 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 ...
+
+#8 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#8 DONE 0.3s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.413 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 0.805 (1/3) Installing musl-obstack (1.2.3-r2)
+#7 0.820 (2/3) Installing libucontext (1.3.2-r0)
+#7 0.826 (3/3) Installing gcompat (1.1.0-r4)
+#7 0.839 OK: 10 MiB in 21 packages
+#7 DONE 1.0s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 0.1s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.1s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 1.226 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 14.69 
+#11 14.69 added 134 packages, and audited 135 packages in 14s
+#11 14.69 
+#11 14.69 47 packages are looking for funding
+#11 14.69   run `npm fund` for details
+#11 14.69 
+#11 14.69 found 0 vulnerabilities
+#11 14.69 npm notice
+#11 14.69 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 14.69 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 14.69 npm notice To update run: npm install -g npm@11.12.1
+#11 14.69 npm notice
+#11 DONE 15.8s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 2.8s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.2s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.1s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.1s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.1s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.1s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.1s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.654 
+#19 0.654 > claude-vid-frontend@1.0.0 build
+#19 0.654 > next build
+#19 0.654 
+#19 1.398    ▲ Next.js 15.5.15
+#19 1.399    - Experiments (use with caution):
+#19 1.399      · serverActions
+#19 1.399 
+#19 1.430    Creating an optimized production build ...
+#19 13.89  ✓ Compiled successfully in 9.4s
+#19 13.89    Linting and checking validity of types ...
+#19 17.39    Collecting page data ...
+#19 19.56    Generating static pages (0/9) ...
+#19 20.21    Generating static pages (2/9) 
+#19 20.42    Generating static pages (4/9) 
+#19 20.42    Generating static pages (6/9) 
+#19 20.42  ✓ Generating static pages (9/9)
+#19 21.16    Finalizing page optimization ...
+#19 21.16    Collecting build traces ...
+#19 40.18 
+#19 40.19 Route (app)                                 Size  First Load JS
+#19 40.19 ┌ ƒ /                                    3.61 kB         109 kB
+#19 40.19 ├ ƒ /_not-found                            991 B         103 kB
+#19 40.19 ├ ƒ /about                                 168 B         106 kB
+#19 40.19 ├ ƒ /api/csrf                              131 B         102 kB
+#19 40.19 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 40.19 ├ ƒ /batch/[id]                          4.74 kB         110 kB
+#19 40.19 ├ ƒ /login                                 168 B         106 kB
+#19 40.19 ├ ƒ /logout                                131 B         102 kB
+#19 40.19 ├ ƒ /public/batch/[token]                  168 B         106 kB
+#19 40.19 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 40.19 ├ ƒ /register                            1.56 kB         107 kB
+#19 40.19 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 40.19 + First Load JS shared by all             102 kB
+#19 40.19   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 40.19   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 40.19   └ other shared chunks (total)          1.92 kB
+#19 40.19 
+#19 40.19 
+#19 40.19 ƒ  (Dynamic)  server-rendered on demand
+#19 40.19 
+#19 40.26 npm notice
+#19 40.26 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 40.26 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 40.26 npm notice To update run: npm install -g npm@11.12.1
+#19 40.26 npm notice
+#19 DONE 40.6s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.1s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.5s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.2s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 6.3s done
+#23 exporting manifest sha256:edb7ae021cf9f72d913276f8e2951aad465af9d70fbeb49f71971638f4eaf7ad 0.0s done
+#23 exporting config sha256:02b9a61105065dcfe1221f6bcaaaa84f1df2bd591ce290ed626124f34866c21f 0.0s done
+#23 exporting attestation manifest sha256:9ebb7d65643e0e785342c15445811e3479beb939415bc1eacd9fde31d30001b4 0.0s done
+#23 exporting manifest list sha256:3efa8a14107c19cf2e2d036f8cabcd9daff37cf3c9cc67c704954c363baf191c 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 1.2s done
+#23 DONE 7.5s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend Stopping 
+ Container claude-vid-frontend Stopped 
+ Container claude-vid-frontend Starting 
+ Container claude-vid-frontend Started 
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.1s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.5s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [frontend builder  2/10] WORKDIR /app
+#4 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 CACHED
+
+#6 [frontend internal] load build context
+#6 transferring context: 7.03kB 0.1s done
+#6 DONE 0.2s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.409 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 ...
+
+#8 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#8 DONE 0.5s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.542 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 0.888 (1/3) Installing musl-obstack (1.2.3-r2)
+#7 0.911 (2/3) Installing libucontext (1.3.2-r0)
+#7 0.917 (3/3) Installing gcompat (1.1.0-r4)
+#7 0.934 OK: 10 MiB in 21 packages
+#7 DONE 1.1s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 0.2s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.2s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 1.275 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 15.03 
+#11 15.03 added 134 packages, and audited 135 packages in 15s
+#11 15.03 
+#11 15.03 47 packages are looking for funding
+#11 15.03   run `npm fund` for details
+#11 15.03 
+#11 15.03 found 0 vulnerabilities
+#11 15.03 npm notice
+#11 15.03 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 15.03 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 15.03 npm notice To update run: npm install -g npm@11.12.1
+#11 15.03 npm notice
+#11 DONE 16.6s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 3.7s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.5s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.2s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.2s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.2s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.2s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.2s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.711 
+#19 0.711 > claude-vid-frontend@1.0.0 build
+#19 0.711 > next build
+#19 0.711 
+#19 1.461    ▲ Next.js 15.5.15
+#19 1.461    - Experiments (use with caution):
+#19 1.461      · serverActions
+#19 1.461 
+#19 1.494    Creating an optimized production build ...
+#19 13.98  ✓ Compiled successfully in 9.6s
+#19 13.98    Linting and checking validity of types ...
+#19 17.55    Collecting page data ...
+#19 20.15    Generating static pages (0/9) ...
+#19 20.76    Generating static pages (2/9) 
+#19 20.84    Generating static pages (4/9) 
+#19 20.87    Generating static pages (6/9) 
+#19 21.08  ✓ Generating static pages (9/9)
+#19 21.85    Finalizing page optimization ...
+#19 21.85    Collecting build traces ...
+#19 41.91 
+#19 41.91 Route (app)                                 Size  First Load JS
+#19 41.91 ┌ ƒ /                                    3.61 kB         109 kB
+#19 41.91 ├ ƒ /_not-found                            991 B         103 kB
+#19 41.91 ├ ƒ /about                                 168 B         106 kB
+#19 41.91 ├ ƒ /api/csrf                              131 B         102 kB
+#19 41.91 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 41.91 ├ ƒ /batch/[id]                          4.86 kB         110 kB
+#19 41.91 ├ ƒ /login                                 168 B         106 kB
+#19 41.91 ├ ƒ /logout                                131 B         102 kB
+#19 41.91 ├ ƒ /public/batch/[token]                  168 B         106 kB
+#19 41.91 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 41.91 ├ ƒ /register                            1.56 kB         107 kB
+#19 41.91 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 41.91 + First Load JS shared by all             102 kB
+#19 41.91   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 41.91   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 41.91   └ other shared chunks (total)          1.92 kB
+#19 41.91 
+#19 41.91 
+#19 41.91 ƒ  (Dynamic)  server-rendered on demand
+#19 41.91 
+#19 41.98 npm notice
+#19 41.98 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 41.98 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 41.98 npm notice To update run: npm install -g npm@11.12.1
+#19 41.98 npm notice
+#19 DONE 42.5s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.2s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.7s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.3s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 3.6s done
+#23 exporting manifest sha256:9cdada3e340587352f487a9c6bd02855ba211a99c26a526e326dda8827644d02 0.0s done
+#23 exporting config sha256:a678ded8ecd3960f8cd5bf39008085b8be8cf9ccc385e7e0c7f61a0f9c951e30 0.0s done
+#23 exporting attestation manifest sha256:8962d7bbd14b61625dd35423b658cc3f051f756fb355ef8a33095ae14e6f4f3a 0.1s done
+#23 exporting manifest list sha256:ca584d995d182ebc7614e846179e213f24c08526158fad091962748a044f9070 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 0.7s done
+#23 DONE 4.6s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
+ Container claude-vid-frontend Stopping 
+ Container claude-vid-frontend Stopped 
+ Container claude-vid-frontend Starting 
+ Container claude-vid-frontend Started 
+ Container claude-vid-frontend  Stopping
+ Container claude-vid-frontend  Stopped
+#0 building with "default" instance using docker driver
+
+#1 [frontend internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 2.71kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load metadata for docker.io/library/node:22.16.0-alpine
+#2 DONE 0.4s
+
+#3 [frontend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.1s
+
+#4 [frontend builder  2/10] WORKDIR /app
+#4 CACHED
+
+#5 [frontend deps 1/5] FROM docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e
+#5 resolve docker.io/library/node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e 0.0s done
+#5 CACHED
+
+#6 [frontend internal] load build context
+#6 transferring context: 2.31kB 0.1s done
+#6 DONE 0.1s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.223 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 ...
+
+#8 [frontend runner 3/6] RUN addgroup --system --gid 1001 nodejs  && adduser  --system --uid 1001 nextjs
+#8 DONE 0.3s
+
+#7 [frontend deps 2/5] RUN apk add --no-cache libc6-compat
+#7 0.538 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 1.093 (1/3) Installing musl-obstack (1.2.3-r2)
+#7 1.111 (2/3) Installing libucontext (1.3.2-r0)
+#7 1.118 (3/3) Installing gcompat (1.1.0-r4)
+#7 1.132 OK: 10 MiB in 21 packages
+#7 DONE 1.3s
+
+#9 [frontend deps 3/5] WORKDIR /app
+#9 DONE 0.1s
+
+#10 [frontend deps 4/5] COPY package.json package-lock.json* .npmrc* ./
+#10 DONE 0.1s
+
+#11 [frontend deps 5/5] RUN npm ci --legacy-peer-deps
+#11 1.488 npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+#11 14.94 
+#11 14.94 added 134 packages, and audited 135 packages in 15s
+#11 14.94 
+#11 14.94 47 packages are looking for funding
+#11 14.94   run `npm fund` for details
+#11 14.95 
+#11 14.95 found 0 vulnerabilities
+#11 14.95 npm notice
+#11 14.95 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#11 14.95 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#11 14.95 npm notice To update run: npm install -g npm@11.12.1
+#11 14.95 npm notice
+#11 DONE 16.0s
+
+#12 [frontend builder  3/10] COPY --from=deps /app/node_modules ./node_modules
+#12 DONE 3.0s
+
+#13 [frontend builder  4/10] COPY next.config.mjs tsconfig.json tailwind.config.mjs postcss.config.js ./
+#13 DONE 0.2s
+
+#14 [frontend builder  5/10] COPY package.json package-lock.json* .npmrc* ./
+#14 DONE 0.1s
+
+#15 [frontend builder  6/10] COPY public      ./public
+#15 DONE 0.1s
+
+#16 [frontend builder  7/10] COPY app         ./app
+#16 DONE 0.1s
+
+#17 [frontend builder  8/10] COPY components  ./components
+#17 DONE 0.1s
+
+#18 [frontend builder  9/10] COPY lib         ./lib
+#18 DONE 0.1s
+
+#19 [frontend builder 10/10] RUN npm run build
+#19 0.616 
+#19 0.616 > claude-vid-frontend@1.0.0 build
+#19 0.616 > next build
+#19 0.616 
+#19 1.363    ▲ Next.js 15.5.15
+#19 1.364    - Experiments (use with caution):
+#19 1.364      · serverActions
+#19 1.364 
+#19 1.397    Creating an optimized production build ...
+#19 14.05  ✓ Compiled successfully in 9.7s
+#19 14.05    Linting and checking validity of types ...
+#19 17.78    Collecting page data ...
+#19 20.33    Generating static pages (0/9) ...
+#19 20.99    Generating static pages (2/9) 
+#19 21.03    Generating static pages (4/9) 
+#19 21.24    Generating static pages (6/9) 
+#19 21.24  ✓ Generating static pages (9/9)
+#19 22.01    Finalizing page optimization ...
+#19 22.01    Collecting build traces ...
+#19 41.64 
+#19 41.65 Route (app)                                 Size  First Load JS
+#19 41.65 ┌ ƒ /                                    3.61 kB         109 kB
+#19 41.65 ├ ƒ /_not-found                            991 B         103 kB
+#19 41.65 ├ ƒ /about                                 168 B         106 kB
+#19 41.65 ├ ƒ /api/csrf                              131 B         102 kB
+#19 41.65 ├ ƒ /api/flask/[...path]                   131 B         102 kB
+#19 41.65 ├ ƒ /batch/[id]                          4.86 kB         110 kB
+#19 41.65 ├ ƒ /login                                 168 B         106 kB
+#19 41.65 ├ ƒ /logout                                131 B         102 kB
+#19 41.65 ├ ƒ /public/batch/[token]                  168 B         106 kB
+#19 41.65 ├ ƒ /public/slideshow/[token]              124 B         109 kB
+#19 41.65 ├ ƒ /register                            1.56 kB         107 kB
+#19 41.65 └ ƒ /slideshow/[id]                        124 B         109 kB
+#19 41.65 + First Load JS shared by all             102 kB
+#19 41.65   ├ chunks/255-4f212684648fcab9.js         46 kB
+#19 41.65   ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+#19 41.65   └ other shared chunks (total)          1.92 kB
+#19 41.65 
+#19 41.65 
+#19 41.65 ƒ  (Dynamic)  server-rendered on demand
+#19 41.65 
+#19 41.70 npm notice
+#19 41.70 npm notice New major version of npm available! 10.9.2 -> 11.12.1
+#19 41.70 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#19 41.70 npm notice To update run: npm install -g npm@11.12.1
+#19 41.70 npm notice
+#19 DONE 42.0s
+
+#20 [frontend runner 4/6] COPY --from=builder /app/public                    ./public
+#20 DONE 0.1s
+
+#21 [frontend runner 5/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+#21 DONE 0.5s
+
+#22 [frontend runner 6/6] COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static
+#22 DONE 0.1s
+
+#23 [frontend] exporting to image
+#23 exporting layers
+#23 exporting layers 3.3s done
+#23 exporting manifest sha256:8a1edeeeabd81bf6203a64295e0650faf6cd9b35259d92077467f851bfe2776b 0.0s done
+#23 exporting config sha256:677ab6df74e980683bdbf98deda0cd6ac56bc77c9b704c751c8e4ce84ea0618d 0.0s done
+#23 exporting attestation manifest sha256:e9e197175699e99d9eb8c8ca82c77f1167e63f395b4f5c033b450c5b2464699e 0.0s done
+#23 exporting manifest list sha256:2838d2625f0ff42fbaf765bf0188593fb1f6df1263c13b33bf122a74de21f144 0.0s done
+#23 naming to docker.io/library/claude-vid-frontend:latest done
+#23 unpacking to docker.io/library/claude-vid-frontend:latest
+#23 unpacking to docker.io/library/claude-vid-frontend:latest 0.7s done
+#23 DONE 4.1s
+ Container claude-vid-frontend  Recreate
+ Container claude-vid-frontend  Recreated
+ Container claude-vid-frontend  Starting
+ Container claude-vid-frontend  Started
