@@ -15,6 +15,7 @@ const UPLOAD_TYPES = [
 
 export function UploadArea({ batches }: UploadAreaProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const xhrRef = useRef<XMLHttpRequest | null>(null);
   const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [batchMode, setBatchMode] = useState<'new' | 'existing'>('new');
@@ -66,6 +67,7 @@ export function UploadArea({ batches }: UploadAreaProps) {
     }
 
     const xhr = new XMLHttpRequest();
+    xhrRef.current = xhr;
     xhr.withCredentials = true;
     xhr.upload.addEventListener('progress', (ev) => {
       if (ev.lengthComputable) {
@@ -73,10 +75,20 @@ export function UploadArea({ batches }: UploadAreaProps) {
       }
     });
     xhr.addEventListener('loadend', () => {
-      window.location.reload();
+      console.log('[upload] loadend status:', xhr.status);
+      if (xhr.status !== 0) {
+        window.location.reload();
+      }
     });
     xhr.open('POST', '/api/flask/upload');
     xhr.send(formData);
+  }
+
+  function handleCancel() {
+    xhrRef.current?.abort();
+    xhrRef.current = null;
+    setUploading(false);
+    setUploadProgress(0);
   }
 
   const destinationName =
@@ -205,7 +217,17 @@ export function UploadArea({ batches }: UploadAreaProps) {
         <div className="space-y-1" role="status" aria-label={`Uploading — ${uploadProgress}%`}>
           <div className="flex justify-between text-xs text-muted">
             <span>Uploading…</span>
-            <span>{uploadProgress}%</span>
+            <div className="flex items-center gap-3">
+              <span>{uploadProgress}%</span>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="text-muted hover:text-danger transition-colors"
+                aria-label="Cancel upload"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
           <div className="w-full h-1.5 rounded-full bg-border overflow-hidden">
             <div
